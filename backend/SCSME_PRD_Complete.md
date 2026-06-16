@@ -7,14 +7,14 @@ _Selangor Chamber of Small and Medium Entrepreneurs — SME Association Portal_
 
 ## 1. Overview
 
-| Item         | Detail                                                                     |
-| ------------ | -------------------------------------------------------------------------- |
-| Project      | SCSME — Selangor Chamber of Small and Medium Entrepreneurs                 |
-| Stack        | ExpressJS (API) · MySQL 8.4 (DB) · TypeORM (ORM) · Next.js (Frontend)     |
+| Item         | Detail                                                                        |
+| ------------ | ----------------------------------------------------------------------------- |
+| Project      | SCSME — Selangor Chamber of Small and Medium Entrepreneurs                    |
+| Stack        | ExpressJS (API) · MySQL 8.4 (DB) · TypeORM (ORM) · Next.js (Frontend)         |
 | Auth         | JWT + role-based access control (separate `users` & `admins` identity tables) |
-| Languages    | Chinese (primary) · English · Bahasa Melayu                                |
-| Monetization | Membership · Events · Resources · Paid Uploads · Ads                       |
-| Exclusions   | No lead gen. No referral commission.                                       |
+| Languages    | Chinese (primary) · English · Bahasa Melayu                                   |
+| Monetization | Membership · Events · Resources · Paid Uploads · Ads                          |
+| Exclusions   | No lead gen. No referral commission.                                          |
 
 ---
 
@@ -22,22 +22,22 @@ _Selangor Chamber of Small and Medium Entrepreneurs — SME Association Portal_
 
 ### Tables & Purpose
 
-| Table               | Purpose                                                                                                          |
-| ------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `users`             | Member-side identity (guest/member/corporate/sponsor). Stores login credentials and role.                        |
-| `admins`            | Admin identity, fully separate from `users`. Has `admin_role` (staff/super_admin) and `last_login_at`.          |
-| `categories`        | Dynamic company category master data (Technology, Retail, F&B, etc). Managed by admin via dashboard.            |
-| `companies`         | Business profile per user. Linked to `categories` via FK. Base for Business Directory and paid uploads.         |
-| `membership_plans`  | Master data for membership packages (Basic/Standard/Corporate) — price, duration, benefits.                     |
-| `subscriptions`     | Active/historical subscription per user. Source of truth for checking active membership status.                 |
-| `events`            | Event/training master data (title, date, location, price, capacity, publish status).                            |
-| `event_registrations` | User event registration record. Stores ticket type, payment status, QR code, attendance, certificate URL.     |
-| `resources`         | Resource catalog (article/template/replay/course) with access levels (public/member/paid).                      |
-| `resource_purchases`| Tracks paid resource access. Used to verify download rights for `access_level = paid`.                          |
-| `paid_uploads`      | Core ad monetization table. All sponsored content types with full status flow and SEO fields.                    |
-| `ad_placements`     | Execution/placement of approved paid_uploads. Tracks impressions, clicks, schedule, and expiry.                 |
-| `payments`          | Polymorphic payment log across all modules via `order_type` + `order_id`. Stores proof and invoice URLs.        |
-| `admin_logs`        | Audit trail for all admin actions. FK to `admins` (not users) for accountability.                               |
+| Table                 | Purpose                                                                                                   |
+| --------------------- | --------------------------------------------------------------------------------------------------------- |
+| `users`               | Member-side identity (guest/member/corporate/sponsor). Stores login credentials and role.                 |
+| `admins`              | Admin identity, fully separate from `users`. Has `admin_role` (staff/super_admin) and `last_login_at`.    |
+| `categories`          | Dynamic company category master data (Technology, Retail, F&B, etc). Managed by admin via dashboard.      |
+| `companies`           | Business profile per user. Linked to `categories` via FK. Base for Business Directory and paid uploads.   |
+| `membership_plans`    | Master data for membership packages (Basic/Standard/Corporate) — price, duration, benefits.               |
+| `subscriptions`       | Active/historical subscription per user. Source of truth for checking active membership status.           |
+| `events`              | Event/training master data (title, date, location, price, capacity, publish status).                      |
+| `event_registrations` | User event registration record. Stores ticket type, payment status, QR code, attendance, certificate URL. |
+| `resources`           | Resource catalog (article/template/replay/course) with access levels (public/member/paid).                |
+| `resource_purchases`  | Tracks paid resource access. Used to verify download rights for `access_level = paid`.                    |
+| `paid_uploads`        | Core ad monetization table. All sponsored content types with full status flow and SEO fields.             |
+| `ad_placements`       | Execution/placement of approved paid_uploads. Tracks impressions, clicks, schedule, and expiry.           |
+| `payments`            | Polymorphic payment log across all modules via `order_type` + `order_id`. Stores proof and invoice URLs.  |
+| `admin_logs`          | Audit trail for all admin actions. FK to `admins` (not users) for accountability.                         |
 
 ### Key Schema Notes
 
@@ -53,21 +53,21 @@ _Selangor Chamber of Small and Medium Entrepreneurs — SME Association Portal_
 
 ### Member-side roles (`users` table)
 
-| Role        | Access                                                        |
-| ----------- | ------------------------------------------------------------- |
-| `guest`     | Public pages, read-only. Assigned on registration.            |
-| `member`    | Profile, events (free), member-tier resources                 |
-| `corporate` | All member access + team seats + higher ad exposure           |
-| `sponsor`   | Paid upload center access                                     |
+| Role        | Access                                              |
+| ----------- | --------------------------------------------------- |
+| `guest`     | Public pages, read-only. Assigned on registration.  |
+| `member`    | Profile, events (free), member-tier resources       |
+| `corporate` | All member access + team seats + higher ad exposure |
+| `sponsor`   | Paid upload center access                           |
 
 > Role is upgraded automatically when subscription is activated (Basic → `member`, Corporate → `corporate`). Role is downgraded to `guest` when subscription expires (via cron job).
 
 ### Admin-side roles (`admins` table — fully separate)
 
-| Role          | Access                                                                     |
-| ------------- | -------------------------------------------------------------------------- |
-| `staff`       | Dashboard modules per assigned permissions                                 |
-| `super_admin` | Full dashboard, all approvals/rejections, staff admin management           |
+| Role          | Access                                                           |
+| ------------- | ---------------------------------------------------------------- |
+| `staff`       | Dashboard modules per assigned permissions                       |
+| `super_admin` | Full dashboard, all approvals/rejections, staff admin management |
 
 > Admin accounts are completely separate from `users`. Admins have no member profiles, subscriptions, or paid uploads. Admin auth uses its own endpoint, JWT payload (`actor_type: 'admin'`), and role guard.
 
@@ -100,52 +100,53 @@ Plan Hierarchy: Basic (level 1) < Standard (level 2) < Corporate (level 3)
 
 ### 5.1 Public Website (Next.js)
 
-| Page                    | Route                           | Key Sections                                       |
-| ----------------------- | ------------------------------- | -------------------------------------------------- |
-| Home                    | `/`                             | Hero, core services, upcoming events, join CTA     |
-| About                   | `/about`                        | Mission, vision, who should join                   |
-| Membership              | `/membership`                   | Plan cards, benefits table, join CTA               |
-| Events & Training       | `/events`                       | Event list, filters, event detail, ticket purchase |
-| Resources Center        | `/resources`                    | Free/paid/member-only downloads                    |
-| Sponsor & Paid Exposure | `/sponsor`                      | Pricing, upload form, package selection            |
-| Business Directory      | `/directory`                    | Search, category filter (dynamic), featured listing|
-| Contact                 | `/contact`                      | Form, WhatsApp link                                |
-| Login / Register        | `/auth/login`, `/auth/register` | JWT auth (member-side only)                        |
+| Page                    | Route                           | Key Sections                                        |
+| ----------------------- | ------------------------------- | --------------------------------------------------- |
+| Home                    | `/`                             | Hero, core services, upcoming events, join CTA      |
+| About                   | `/about`                        | Mission, vision, who should join                    |
+| Membership              | `/membership`                   | Plan cards, benefits table, join CTA                |
+| Events & Training       | `/events`                       | Event list, filters, event detail, ticket purchase  |
+| Resources Center        | `/resources`                    | Free/paid/member-only downloads                     |
+| Sponsor & Paid Exposure | `/sponsor`                      | Pricing, upload form, package selection             |
+| Business Directory      | `/directory`                    | Search, category filter (dynamic), featured listing |
+| Contact                 | `/contact`                      | Form, WhatsApp link                                 |
+| Login / Register        | `/auth/login`, `/auth/register` | JWT auth (member-side only)                         |
 
 ### 5.2 Member Portal (Next.js — protected routes)
 
-| Module             | Route                    | Function                                              |
-| ------------------ | ------------------------ | ----------------------------------------------------- |
-| Dashboard          | `/dashboard`             | Overview: subscription status, events, uploads        |
-| Profile            | `/dashboard/profile`     | Edit company profile, upload logo, select category    |
-| My Events          | `/dashboard/events`      | Registered events, QR code display, certificate DL    |
-| My Resources       | `/dashboard/resources`   | Free downloads, purchased replay access               |
-| Paid Upload Center | `/dashboard/uploads`     | Submit banner/brand/product/article/push/featured     |
-| My Subscription    | `/dashboard/membership`  | Current plan, renewal status, upgrade option          |
+| Module             | Route                   | Function                                           |
+| ------------------ | ----------------------- | -------------------------------------------------- |
+| Dashboard          | `/dashboard`            | Overview: subscription status, events, uploads     |
+| Profile            | `/dashboard/profile`    | Edit company profile, upload logo, select category |
+| My Events          | `/dashboard/events`     | Registered events, QR code display, certificate DL |
+| My Resources       | `/dashboard/resources`  | Free downloads, purchased replay access            |
+| Paid Upload Center | `/dashboard/uploads`    | Submit banner/brand/product/article/push/featured  |
+| My Subscription    | `/dashboard/membership` | Current plan, renewal status, upgrade option       |
 
 ### 5.3 Admin Dashboard (Next.js — admin auth only)
 
-| Module                            | Route                    | Access         |
-| --------------------------------- | ------------------------ | -------------- |
-| Admin Login                       | `/admin/login`           | Public         |
-| Revenue Overview / Dashboard      | `/admin`                 | staff + super  |
-| Members Management                | `/admin/members`         | staff + super  |
-| Subscriptions                     | `/admin/subscriptions`   | staff + super  |
-| Events Management                 | `/admin/events`          | staff + super  |
-| Paid Uploads Approval Queue       | `/admin/uploads`         | staff + super  |
-| Ad Placements & Performance       | `/admin/placements`      | staff + super  |
-| Resources Management              | `/admin/resources`       | staff + super  |
-| Categories Management             | `/admin/categories`      | staff + super  |
-| Payments & Proof Verification     | `/admin/payments`        | staff + super  |
-| Expiry & Renewal Monitor          | `/admin/expiry`          | staff + super  |
-| Audit Logs                        | `/admin/logs`            | staff + super  |
-| Staff Admin Management            | `/admin/staff`           | super_admin only |
+| Module                        | Route                  | Access           |
+| ----------------------------- | ---------------------- | ---------------- |
+| Admin Login                   | `/admin/login`         | Public           |
+| Revenue Overview / Dashboard  | `/admin`               | staff + super    |
+| Members Management            | `/admin/members`       | staff + super    |
+| Subscriptions                 | `/admin/subscriptions` | staff + super    |
+| Events Management             | `/admin/events`        | staff + super    |
+| Paid Uploads Approval Queue   | `/admin/uploads`       | staff + super    |
+| Ad Placements & Performance   | `/admin/placements`    | staff + super    |
+| Resources Management          | `/admin/resources`     | staff + super    |
+| Categories Management         | `/admin/categories`    | staff + super    |
+| Payments & Proof Verification | `/admin/payments`      | staff + super    |
+| Expiry & Renewal Monitor      | `/admin/expiry`        | staff + super    |
+| Audit Logs                    | `/admin/logs`          | staff + super    |
+| Staff Admin Management        | `/admin/staff`         | super_admin only |
 
 ---
 
 ## 6. API Endpoints (ExpressJS)
 
 ### Auth — Member side
+
 ```
 POST   /api/auth/register
 POST   /api/auth/login
@@ -154,6 +155,7 @@ POST   /api/auth/logout
 ```
 
 ### Auth — Admin side (separate table & tokens)
+
 ```
 POST   /api/admin/auth/login
 POST   /api/admin/auth/refresh
@@ -161,6 +163,7 @@ POST   /api/admin/auth/logout
 ```
 
 ### Users & Companies
+
 ```
 GET    /api/users/me
 PUT    /api/users/me
@@ -172,15 +175,17 @@ GET    /api/companies/:id                # public: for directory
 ```
 
 ### Categories
+
 ```
 GET    /api/categories                   # public: dropdown list for forms
-GET    /api/admin/categories             # admin: full list with is_active
+GET    /api/admin/categories             # admin: full list
 POST   /api/admin/categories             # create
 PATCH  /api/admin/categories/:id         # update
-DELETE /api/admin/categories/:id         # soft delete (set is_active = 0)
+DELETE /api/admin/categories/:id         #
 ```
 
 ### Membership
+
 ```
 GET    /api/membership/plans             # public: list active plans
 POST   /api/membership/subscribe         # create subscription + payment record
@@ -188,6 +193,7 @@ GET    /api/membership/my-subscription   # current user's active subscription
 ```
 
 ### Events
+
 ```
 GET    /api/events                       # public: list published events
 GET    /api/events/:id                   # public: event detail
@@ -206,6 +212,7 @@ POST   /api/admin/events/:id/certificates/generate  # bulk generate certs
 ```
 
 ### Resources
+
 ```
 GET    /api/resources                    # filtered by user's access level
 GET    /api/resources/:id
@@ -219,6 +226,7 @@ DELETE /api/admin/resources/:id
 ```
 
 ### Paid Uploads
+
 ```
 POST   /api/uploads                      # create upload draft
 PUT    /api/uploads/:id                  # update draft or submit revision
@@ -234,6 +242,7 @@ PUT    /api/admin/uploads/:id/revision   # → revision_required (with notes)
 ```
 
 ### Ad Placements
+
 ```
 POST   /api/placements/:id/impression    # frontend: track impression
 POST   /api/placements/:id/click         # frontend: track click
@@ -244,6 +253,7 @@ GET    /api/admin/placements/expiring    # expiring within 7 days
 ```
 
 ### Payments
+
 ```
 POST   /api/payments/proof               # upload manual transfer proof
 GET    /api/payments/invoice/:id         # download invoice
@@ -255,6 +265,7 @@ PUT    /api/admin/payments/:id/reject    # reject proof, request re-upload
 ```
 
 ### Admin Supporting
+
 ```
 GET    /api/admin/dashboard/stats        # total members, revenue, pending counts
 GET    /api/admin/logs                   # audit trail
@@ -284,6 +295,7 @@ Draft
 ```
 
 **Rules:**
+
 - No upload goes to `published` without `payment_status = paid` + admin approval
 - Admin free override → must log reason in `admin_logs` (FK to `admins.id`)
 - 7 days before `end_date` → send renewal reminder (cron job)
@@ -293,43 +305,45 @@ Draft
 
 ## 8. Cron Jobs (Daily at 00:00)
 
-| Job | Query | Action |
-| --- | ----- | ------ |
-| Expire subscriptions | `end_date < today AND renewal_status = active` | Set `renewal_status = expired`, downgrade `users.role` to `guest`, send email |
-| Expire paid uploads | `end_date < today AND status = published` | Set `status = expired`, update `ad_placements` |
-| Renewal reminder | `end_date = today + 7` | Send email + push notification with renewal link |
-| Publish scheduled uploads | `start_date = today AND status = scheduled` | Set `status = published`, create/update `ad_placements`, set `published_at = NOW()` |
+| Job                       | Query                                          | Action                                                                              |
+| ------------------------- | ---------------------------------------------- | ----------------------------------------------------------------------------------- |
+| Expire subscriptions      | `end_date < today AND renewal_status = active` | Set `renewal_status = expired`, downgrade `users.role` to `guest`, send email       |
+| Expire paid uploads       | `end_date < today AND status = published`      | Set `status = expired`, update `ad_placements`                                      |
+| Renewal reminder          | `end_date = today + 7`                         | Send email + push notification with renewal link                                    |
+| Publish scheduled uploads | `start_date = today AND status = scheduled`    | Set `status = published`, create/update `ad_placements`, set `published_at = NOW()` |
 
 ---
 
 ## 9. Monetization Summary
 
-| Item                 | Charge Logic                              |
-| -------------------- | ----------------------------------------- |
+| Item                 | Charge Logic                                                |
+| -------------------- | ----------------------------------------------------------- |
 | Membership           | RM0 (Basic) / RM300 (Standard) / RM800 (Corporate) per year |
-| Event ticket         | Per event, per ticket type (standard/VIP) |
-| Resource download    | Per item (paid resources only)            |
-| Homepage banner      | By placement + duration (7/14/30 days)    |
-| Brand profile        | By duration (30/90/365 days)              |
-| Product/service card | Per listing or bundle                     |
-| Sponsored article    | Per article or campaign                   |
-| Push notification    | Per send / per segment                    |
-| Featured directory   | By days + category                        |
-| Event sponsor slot   | Per event                                 |
-| Training sponsor     | Per training/workshop                     |
-| Resource sponsor     | Per resource item                         |
+| Event ticket         | Per event, per ticket type (standard/VIP)                   |
+| Resource download    | Per item (paid resources only)                              |
+| Homepage banner      | By placement + duration (7/14/30 days)                      |
+| Brand profile        | By duration (30/90/365 days)                                |
+| Product/service card | Per listing or bundle                                       |
+| Sponsored article    | Per article or campaign                                     |
+| Push notification    | Per send / per segment                                      |
+| Featured directory   | By days + category                                          |
+| Event sponsor slot   | Per event                                                   |
+| Training sponsor     | Per training/workshop                                       |
+| Resource sponsor     | Per resource item                                           |
 
 ---
 
 ## 10. Backend Development Order
 
 ### Phase 1 — Core Foundation
+
 ```
 1. Category CRUD (admin)
 2. Membership Plans CRUD (admin)
 ```
 
 ### Phase 2 — Membership Flow
+
 ```
 3. Subscription + Payment (membership)
 4. Admin Approval for Membership Payment
@@ -337,12 +351,14 @@ Draft
 ```
 
 ### Phase 3 — Company Profile
+
 ```
 5. Company CRUD (user) — depends on categories
 6. Admin Company Verification
 ```
 
 ### Phase 4 — Events Flow
+
 ```
 7. Events CRUD (public + admin)
 8. Event Registration + Payment
@@ -351,6 +367,7 @@ Draft
 ```
 
 ### Phase 5 — Resources Flow
+
 ```
 11. Resources CRUD (public + admin)
 12. Plan-based access guard (queries active subscription)
@@ -359,6 +376,7 @@ Draft
 ```
 
 ### Phase 6 — Paid Upload Flow
+
 ```
 15. Paid Upload draft/submit/pay (user)
 16. Admin Review queue (approve/reject/revision)
@@ -367,6 +385,7 @@ Draft
 ```
 
 ### Phase 7 — Cron Jobs
+
 ```
 19. Expire subscriptions + downgrade role
 20. Expire paid uploads + unpublish ad placements
@@ -375,6 +394,7 @@ Draft
 ```
 
 ### Phase 8 — Admin Supporting
+
 ```
 23. Admin dashboard stats
 24. Revenue report by category
@@ -475,16 +495,17 @@ scsme/
 
 ### Key corrections from initial schema:
 
-| Entity         | Change                                                                      |
-| -------------- | --------------------------------------------------------------------------- |
-| `BaseEntity`   | Remove `@CreateDateColumn` — each entity declares `createdAt` independently |
-| `Category`     | New entity — `id`, `name`, `slug`, `isActive`                               |
-| `Company`      | `category` (varchar) → `categoryId` (FK to categories); fix `verificationStatus` naming |
-| `PaidUpload`   | Fix `upload_type` → `uploadType`                                            |
-| `AdPlacement`  | Fix `paidUpload_id` → `paidUploadId`                                        |
-| All entities   | Add `@CreateDateColumn({ name: 'created_at' })` where missing               |
+| Entity        | Change                                                                                  |
+| ------------- | --------------------------------------------------------------------------------------- |
+| `BaseEntity`  | Remove `@CreateDateColumn` — each entity declares `createdAt` independently             |
+| `Category`    | New entity — `id`, `name`, `slug`                                                       |
+| `Company`     | `category` (varchar) → `categoryId` (FK to categories); fix `verificationStatus` naming |
+| `PaidUpload`  | Fix `upload_type` → `uploadType`                                                        |
+| `AdPlacement` | Fix `paidUpload_id` → `paidUploadId`                                                    |
+| All entities  | Add `@CreateDateColumn({ name: 'created_at' })` where missing                           |
 
 ### Collation warning:
+
 `categories` table is `utf8mb4_0900_ai_ci` (MySQL 8.4 default). `companies.category_id` must match this collation or FK creation will fail with `#3780`.
 
 ---

@@ -19,7 +19,7 @@ export class User extends BaseEntity {
   phone: string | null;
 
   @Column({ name: "password_hash", type: "varchar", length: 255 })
-  passwordHash: string;
+  password: string;
 
   @Column({
     type: "enum",

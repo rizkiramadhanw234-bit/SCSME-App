@@ -6,6 +6,8 @@ import { testDbConnection } from "./config/db";
 import adminRouter from "./routes/admin.route";
 import userRouter from "./routes/user.route";
 import categoryRouter from "./routes/category.route";
+import membershipPlansRouter from "./routes/membership-plans.route";
+import subscriptionRouter from "./routes/subscription.route";
 
 dotenv.config();
 testDbConnection();
@@ -33,5 +35,7 @@ app.get("/", (req: Request, res: Response) => {
 app.use("/admin", adminRouter);
 app.use("/user", userRouter);
 app.use("/category", categoryRouter);
+app.use("/membership-plans", membershipPlansRouter);
+app.use("/subscription", subscriptionRouter);
 
 export default app;

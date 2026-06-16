@@ -4,6 +4,7 @@ import { AppDataSource } from "../config/db";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { Like } from "typeorm/browser";
+import type { StringValue } from "ms";
 
 const usersRepo = AppDataSource.getRepository(User);
 
@@ -16,7 +17,7 @@ export async function getUsers(req: Request, res: Response): Promise<void> {
       skip: offset,
     });
     const userNoPassword = users.map((user) => {
-      const { passwordHash, ...userNoPassword } = user;
+      const { password, ...userNoPassword } = user;
       return userNoPassword;
     });
     res.json({
@@ -35,13 +36,13 @@ export async function getUsers(req: Request, res: Response): Promise<void> {
 
 export async function getUserById(req: Request, res: Response): Promise<void> {
   try {
-    const { id } = req.params as { id: string };
-    const user = await usersRepo.findOneBy({ id });
+    const { userId } = req.params as { userId: string };
+    const user = await usersRepo.findOneBy({ id: userId });
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
     }
-    const { passwordHash, ...userNoPassword } = user;
+    const { password, ...userNoPassword } = user;
     res.json({ message: "user fetched", data: userNoPassword });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -59,7 +60,7 @@ export async function getUserByEmail(
       res.status(404).json({ message: "User not found" });
       return;
     }
-    const { passwordHash, ...userNoPassword } = user;
+    const { password, ...userNoPassword } = user;
     res.json({ message: "user fetched", data: userNoPassword });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -89,7 +90,7 @@ export async function searchUserByName(
       return;
     } else {
       const userNoPassword = user.map((user) => {
-        const { passwordHash, ...userNoPassword } = user;
+        const { password, ...userNoPassword } = user;
         return userNoPassword;
       });
       res.json({
@@ -109,8 +110,8 @@ export async function searchUserByName(
 
 export async function createUser(req: Request, res: Response): Promise<void> {
   try {
-    const { name, email, passwordHash, role } = req.body as User;
-    if (!name || !email || !passwordHash || !role) {
+    const { name, email, password, role } = req.body as User;
+    if (!name || !email || !password || !role) {
       res.status(400).json({ message: "Missing required fields" });
       return;
     }
@@ -119,7 +120,7 @@ export async function createUser(req: Request, res: Response): Promise<void> {
       res.status(400).json({ message: "Invalid email format" });
       return;
     }
-    if (passwordHash.length < 8) {
+    if (password.length < 8) {
       res
         .status(400)
         .json({ message: "Password must be at least 8 characters long" });
@@ -130,14 +131,14 @@ export async function createUser(req: Request, res: Response): Promise<void> {
       res.status(400).json({ message: "Email already exists" });
       return;
     }
-    const hashedPassword = await bcrypt.hash(passwordHash, 10);
+    const hashedPassword = await bcrypt.hash(password, 10);
     const newUser = await usersRepo.save({
       name,
       email,
-      passwordHash: hashedPassword,
+      password: hashedPassword,
       role,
     });
-    const { passwordHash: _, ...userNoPassword } = newUser;
+    const { password: _, ...userNoPassword } = newUser;
     res.status(201).json({ message: "User created", data: userNoPassword });
   } catch (error) {
     console.error(error);
@@ -148,16 +149,21 @@ export async function createUser(req: Request, res: Response): Promise<void> {
 export async function updateUser(req: Request, res: Response): Promise<void> {
   try {
     const { id } = req.params as { id: string };
-    const { name, email, passwordHash } = req.body as User;
+    const { name, email, password } = req.body as User;
     const user = await usersRepo.findOneBy({ id });
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
     }
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && !emailRegex.test(email)) {
+      res.status(400).json({ message: "Invalid email format" });
+      return;
+    }
     if (
       name === user.name &&
       email === user.email &&
-      passwordHash === user.passwordHash
+      password === user.password
     ) {
       res.status(400).json({ message: "No changes" });
       return;
@@ -168,22 +174,38 @@ export async function updateUser(req: Request, res: Response): Promise<void> {
     if (email) {
       user.email = email;
     }
-    let hashedPassword = user.passwordHash;
-    if (passwordHash) {
-      hashedPassword = await bcrypt.hash(passwordHash, 10);
-      user.passwordHash = hashedPassword;
+    let hashedPassword = user.password;
+    if (password) {
+      hashedPassword = await bcrypt.hash(password, 10);
+      user.password = hashedPassword;
     }
-    if (passwordHash.length < 8) {
+    if (password.length < 8) {
       res
         .status(400)
         .json({ message: "Password must be at least 8 characters long" });
       return;
     }
 
-    const updatedUser = await usersRepo.save(user);
-    const { passwordHash: _, ...userNoPassword } = updatedUser;
+    const currentEmail = user.email;
+    const emailExists = await usersRepo.findOneBy({ email: email });
+    if (emailExists && emailExists.email !== currentEmail) {
+      res.status(400).json({ message: "Email already exists" });
+      return;
+    }
 
-    res.status(200).json({ message: "User updated", data: userNoPassword });
+    await usersRepo.update({ id }, user);
+    res.status(200).json({ message: "User updated" });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function deleteUser(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.params as { id: string };
+    await usersRepo.delete({ id });
+    res.status(200).json({ message: "user deleted" });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
@@ -191,28 +213,40 @@ export async function updateUser(req: Request, res: Response): Promise<void> {
 
 export async function loginUser(req: Request, res: Response): Promise<void> {
   try {
-    const { email, passwordHash } = req.body;
+    const { email, password } = req.body as { email: string; password: string };
     const user = await usersRepo.findOneBy({ email });
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
     }
-    const isPasswordMatch = await bcrypt.compare(
-      passwordHash,
-      user.passwordHash,
-    );
+    const isPasswordMatch = await bcrypt.compare(password, user.password);
 
     if (!isPasswordMatch) {
       res.status(401).json({ message: "Invalid credentials" });
       return;
     }
 
-    const token = jwt.sign(
+    const accessToken = jwt.sign(
       { userId: user.id },
       process.env.JWT_SECRET as string,
+      { expiresIn: process.env.JWT_EXPIRES_IN as StringValue },
     );
 
-    res.json({ message: "user logged in", token });
+    const refreshToken = jwt.sign(
+      { userId: user.id },
+      process.env.REFRESH_TOKEN_SECRET as string,
+      { expiresIn: process.env.REFRESH_TOKEN_EXPIRES_IN as StringValue },
+    );
+
+    const isProduction = process.env.NODE_ENV === "production";
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      sameSite: isProduction ? "none" : "lax",
+      secure: isProduction,
+    });
+
+    const { password: _, ...userNoPassword } = user;
+    res.json({ message: "user logged in", accessToken, data: userNoPassword });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
@@ -227,11 +261,29 @@ export async function logoutUser(req: Request, res: Response): Promise<void> {
   }
 }
 
-export async function deleteUser(req: Request, res: Response): Promise<void> {
+export async function refreshToken(req: Request, res: Response): Promise<void> {
   try {
-    const { id } = req.params as { id: string };
-    await usersRepo.delete({ id });
-    res.status(200).json({ message: "user deleted" });
+    const refreshToken = req.cookies.refreshToken as string;
+    if (!refreshToken) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+    const { userId } = jwt.verify(
+      refreshToken,
+      process.env.REFRESH_TOKEN_SECRET as string,
+    ) as { userId: string };
+
+    const user = await usersRepo.findOneBy({ id: userId });
+    if (!user) {
+      res.status(401).json({ message: "Unauthorized" });
+      return;
+    }
+    const accessToken = jwt.sign(
+      { userId: user.id },
+      process.env.JWT_SECRET as string,
+      { expiresIn: process.env.JWT_EXPIRES_IN as StringValue },
+    );
+    res.json({ accessToken });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

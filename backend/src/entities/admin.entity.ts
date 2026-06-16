@@ -10,7 +10,7 @@ export class Admin extends BaseEntity {
   email: string;
 
   @Column({ name: "password_hash", type: "varchar", length: 255 })
-  passwordHash: string;
+  password: string;
 
   @Column({
     name: "admin_role",

@@ -12,6 +12,7 @@ export async function getCategories(
     const categories = await categoriesRepo.find();
     res.status(200).json({ message: "categories fetched", data: categories });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -33,20 +34,31 @@ export async function getCategoryById(
   }
 }
 
+export async function generateSlug(name: string): Promise<string> {
+  const slug = name.toLowerCase().replace(/ /g, "-");
+  return slug;
+}
+
 export async function createCategory(
   req: Request,
   res: Response,
 ): Promise<void> {
   try {
     const { name } = req.body as { name: string };
+    if (!name) {
+      res.status(400).json({ message: "Name and slug are required" });
+      return;
+    }
+    const slug = await generateSlug(name);
     const categoryExist = await categoriesRepo.findOneBy({ name });
     if (categoryExist) {
       res.status(400).json({ message: "Category already exists" });
     } else {
-      const newCategory = await categoriesRepo.save({ name });
-      res.status(200).json({ message: "Category created", data: newCategory });
+      const newCategory = await categoriesRepo.save({ name, slug });
+      res.status(201).json({ message: "Category created", data: newCategory });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -58,16 +70,25 @@ export async function updateCategory(
   try {
     const { id } = req.params as { id: string };
     const { name } = req.body as { name: string };
+    const slug = await generateSlug(name);
     const category = await categoriesRepo.findOneBy({ id });
     if (!category) {
       res.status(404).json({ message: "Category not found" });
       return;
     }
+    if (name === category.name && slug === category.slug) {
+      res.status(400).json({ message: "No changes" });
+      return;
+    }
     if (name) {
       category.name = name;
     }
-    await categoriesRepo.save(category);
-    res.status(200).json({ message: "Category updated", data: category });
+    if (slug) {
+      category.slug = slug;
+    }
+
+    await categoriesRepo.update({ id }, category);
+    res.status(200).json({ message: "Category updated" });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
