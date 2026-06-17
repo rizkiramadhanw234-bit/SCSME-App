@@ -30,12 +30,10 @@ export async function MembershipPlanIsActive(
     const isActive = !membershipPlan.isActive;
     membershipPlan.isActive = isActive;
     await membershipPlansRepo.update({ id }, membershipPlan);
-    res
-      .status(200)
-      .json({
-        message: `Membership plan ${isActive ? "activated" : "deactivated"}`,
-        data: membershipPlan,
-      });
+    res.status(200).json({
+      message: `Membership plan ${isActive ? "activated" : "deactivated"}`,
+      data: membershipPlan,
+    });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
@@ -106,20 +104,16 @@ export async function updateMembershipPlan(req: Request, res: Response) {
       res.status(400).json({ message: "At least one field is required" });
       return;
     }
-    if (planName) {
-      membershipPlan.planName = planName;
-    }
-    if (price) {
-      membershipPlan.price = price;
-    }
-    if (durationDays) {
-      membershipPlan.durationDays = durationDays;
-    }
-    if (benefits) {
-      membershipPlan.benefits = benefits;
-    }
-    await membershipPlansRepo.update({ id }, membershipPlan);
-    res.status(200).json({ message: "Membership plan updated" });
+    const updatedMembershipPlan = await membershipPlansRepo.update(
+      { id },
+      { planName, price, durationDays, benefits },
+    );
+    res
+      .status(200)
+      .json({
+        message: "Membership plan updated",
+        data: updatedMembershipPlan,
+      });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
