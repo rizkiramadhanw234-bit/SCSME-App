@@ -88,7 +88,7 @@ export async function updateCategory(
     }
 
     await categoriesRepo.update({ id }, category);
-    res.status(201).json({ message: "Category updated" });
+    res.status(201).json({ message: "Category updated", data: category });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

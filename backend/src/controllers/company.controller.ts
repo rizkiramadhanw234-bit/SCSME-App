@@ -134,16 +134,14 @@ export async function updateCompany(
       res.status(400).json({ message: "No changes" });
       return;
     }
-    const updatedCompany = await companiesRepo.update(
-      { id },
-      {
-        companyName,
-        categoryId,
-        description,
-        logoUrl,
-        website,
-      },
-    );
+    const updatedCompany = await companiesRepo.save({
+      ...company,
+      companyName,
+      categoryId,
+      description,
+      logoUrl,
+      website,
+    });
     res.status(200).json({ message: "Company updated", data: updatedCompany });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });

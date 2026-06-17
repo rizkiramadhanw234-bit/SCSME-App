@@ -111,20 +111,28 @@ export async function updateEvent(req: Request, res: Response): Promise<void> {
     }
 
     const eventDateObj = new Date(eventDate);
-    const updatedEvent = await eventsRepo.update(
-      { id },
-      {
-        title,
-        description,
-        eventDate: eventDateObj,
-        location,
-        price,
-        capacity,
-        coverImage,
-        language,
-      },
-    );
+    const updatedEvent = await eventsRepo.save({
+      ...eventExist,
+      title,
+      description,
+      eventDate: eventDateObj,
+      location,
+      price,
+      capacity,
+      coverImage,
+      language,
+    });
     res.status(200).json({ message: "Event updated", data: updatedEvent });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function deleteEvent(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.params as { id: string };
+    await eventsRepo.delete({ id });
+    res.status(200).json({ message: "Event deleted" });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

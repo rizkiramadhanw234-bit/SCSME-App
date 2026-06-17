@@ -116,10 +116,10 @@ export async function upgradeSubscription(
         renewalStatus,
       },
     );
-    const updatedSubscription = await subscriptionsRepo.findOneBy({ id });
+    const upgradedSubscription = await subscriptionsRepo.findOneBy({ id });
     res
       .status(200)
-      .json({ message: "Subscription updated", data: updatedSubscription });
+      .json({ message: "Subscription updated", data: upgradedSubscription });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

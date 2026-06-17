@@ -104,16 +104,17 @@ export async function updateMembershipPlan(req: Request, res: Response) {
       res.status(400).json({ message: "At least one field is required" });
       return;
     }
-    const updatedMembershipPlan = await membershipPlansRepo.update(
-      { id },
-      { planName, price, durationDays, benefits },
-    );
-    res
-      .status(200)
-      .json({
-        message: "Membership plan updated",
-        data: updatedMembershipPlan,
-      });
+    const updatedMembershipPlan = await membershipPlansRepo.save({
+      ...membershipPlan,
+      planName,
+      price,
+      durationDays,
+      benefits,
+    });
+    res.status(200).json({
+      message: "Membership plan updated",
+      data: updatedMembershipPlan,
+    });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
