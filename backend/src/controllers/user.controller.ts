@@ -20,7 +20,7 @@ export async function getUsers(req: Request, res: Response): Promise<void> {
       const { password, ...userNoPassword } = user;
       return userNoPassword;
     });
-    res.json({
+    res.status(200).json({
       message: "user fetched",
       data: userNoPassword,
       meta: {
@@ -93,7 +93,7 @@ export async function searchUserByName(
         const { password, ...userNoPassword } = user;
         return userNoPassword;
       });
-      res.json({
+      res.status(200).json({
         message: "user fetched",
         data: userNoPassword,
         meta: {
@@ -246,7 +246,9 @@ export async function loginUser(req: Request, res: Response): Promise<void> {
     });
 
     const { password: _, ...userNoPassword } = user;
-    res.json({ message: "user logged in", accessToken, data: userNoPassword });
+    res
+      .status(200)
+      .json({ message: "user logged in", accessToken, data: userNoPassword });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

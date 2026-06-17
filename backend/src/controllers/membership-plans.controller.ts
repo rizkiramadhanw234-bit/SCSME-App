@@ -32,7 +32,10 @@ export async function MembershipPlanIsActive(
     await membershipPlansRepo.update({ id }, membershipPlan);
     res
       .status(200)
-      .json({ message: "Membership plan updated", data: membershipPlan });
+      .json({
+        message: `Membership plan ${isActive ? "activated" : "deactivated"}`,
+        data: membershipPlan,
+      });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
@@ -79,7 +82,7 @@ export async function createMembershipPlan(req: Request, res: Response) {
       durationDays,
       benefits,
     });
-    res.status(200).json({
+    res.status(201).json({
       message: "Membership plan created",
       data: newMembershipPlan,
     });

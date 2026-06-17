@@ -55,7 +55,7 @@ export async function createCategory(
       res.status(400).json({ message: "Category already exists" });
     } else {
       const newCategory = await categoriesRepo.save({ name, slug });
-      res.status(201).json({ message: "Category created", data: newCategory });
+      res.status(200).json({ message: "Category created", data: newCategory });
     }
   } catch (error) {
     console.log(error);
@@ -88,7 +88,7 @@ export async function updateCategory(
     }
 
     await categoriesRepo.update({ id }, category);
-    res.status(200).json({ message: "Category updated" });
+    res.status(201).json({ message: "Category updated" });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

@@ -1,11 +1,4 @@
-// entities/subscription.entity.ts
-import {
-  Entity,
-  PrimaryGeneratedColumn,
-  Column,
-  ManyToOne,
-  JoinColumn,
-} from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
 import { User } from "./user.entity";
 import { MembershipPlan } from "./membership-plan.entity";
 import { BaseEntity } from "./base";

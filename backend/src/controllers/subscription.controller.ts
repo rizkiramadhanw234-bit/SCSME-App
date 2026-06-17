@@ -34,13 +34,14 @@ export async function getSubscriptionById(
       .status(200)
       .json({ message: "Subscription fetched", data: getSubscription });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
 
 export async function createSubscription(req: Request, res: Response) {
   try {
-    const { userId, planId, startDate, endDate, paymentStatus, renewalStatus } =
+    const { userId, planId, startDate, endDate, renewalStatus } =
       req.body as Subscription;
     const membershipPlansRepo = AppDataSource.getRepository(MembershipPlan);
     const membershipPlan = await membershipPlansRepo.findOneBy({ id: planId });
@@ -57,7 +58,7 @@ export async function createSubscription(req: Request, res: Response) {
       planId,
       startDate,
       endDate,
-      paymentStatus,
+      paymentStatus: "pending",
       renewalStatus,
     });
 
@@ -75,7 +76,7 @@ export async function upgradeSubscription(
 ): Promise<void> {
   try {
     const { id } = req.params as { id: string };
-    const { userId, planId, startDate, endDate, paymentStatus, renewalStatus } =
+    const { userId, planId, startDate, endDate, renewalStatus } =
       req.body as Subscription;
     const currentSubscription = await subscriptionsRepo.findOneBy({ id });
     if (!currentSubscription) {
@@ -94,7 +95,14 @@ export async function upgradeSubscription(
     }
     await subscriptionsRepo.update(
       { id },
-      { userId, planId, startDate, endDate, paymentStatus, renewalStatus },
+      {
+        userId,
+        planId,
+        startDate,
+        endDate,
+        paymentStatus: "pending",
+        renewalStatus,
+      },
     );
     const updatedSubscription = await subscriptionsRepo.findOneBy({ id });
     res

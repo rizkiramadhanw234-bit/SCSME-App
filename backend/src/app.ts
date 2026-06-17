@@ -8,6 +8,9 @@ import userRouter from "./routes/user.route";
 import categoryRouter from "./routes/category.route";
 import membershipPlansRouter from "./routes/membership-plans.route";
 import subscriptionRouter from "./routes/subscription.route";
+import paymentRouter from "./routes/payment.route";
+import companyRouter from "./routes/company.route";
+import companyVerifyRouter from "./routes/companyVerify.route";
 
 dotenv.config();
 testDbConnection();
@@ -37,5 +40,8 @@ app.use("/user", userRouter);
 app.use("/category", categoryRouter);
 app.use("/membership-plans", membershipPlansRouter);
 app.use("/subscription", subscriptionRouter);
+app.use("/payment", paymentRouter);
+app.use("/company", companyRouter);
+app.use("/company-verify", companyVerifyRouter);
 
 export default app;

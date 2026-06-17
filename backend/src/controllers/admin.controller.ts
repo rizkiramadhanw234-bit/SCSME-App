@@ -20,7 +20,7 @@ export async function getAdmins(req: Request, res: Response): Promise<void> {
       const { password, ...adminNoPassword } = admin;
       return adminNoPassword;
     });
-    res.json({
+    res.status(200).json({
       message: "admin fetched",
       data: adminNoPassword,
       meta: {
@@ -43,7 +43,7 @@ export async function getAdminById(req: Request, res: Response): Promise<void> {
       return;
     }
     const { password, ...adminNoPassword } = admin;
-    res.json({ message: "admin fetched", data: adminNoPassword });
+    res.status(200).json({ message: "admin fetched", data: adminNoPassword });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
@@ -61,7 +61,7 @@ export async function getAdminByEmail(
       return;
     }
     const { password, ...adminNoPassword } = admin;
-    res.json({ message: "admin fetched", data: adminNoPassword });
+    res.status(200).json({ message: "admin fetched", data: adminNoPassword });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
