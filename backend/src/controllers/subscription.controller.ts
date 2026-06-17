@@ -53,11 +53,17 @@ export async function createSubscription(req: Request, res: Response) {
       res.status(400).json({ message: "Membership plan is not active" });
       return;
     }
+    const startDateSub = new Date(startDate);
+    const endDateSub = new Date(endDate);
+    if (startDateSub > endDateSub) {
+      res.status(400).json({ message: "Start date must be before end date" });
+      return;
+    }
     const newSubscription = await subscriptionsRepo.save({
       userId,
       planId,
-      startDate,
-      endDate,
+      startDate: startDateSub,
+      endDate: endDateSub,
       paymentStatus: "pending",
       renewalStatus,
     });
@@ -93,13 +99,19 @@ export async function upgradeSubscription(
       res.status(400).json({ message: "Membership plan is not active" });
       return;
     }
+    const startDateSub = new Date(startDate);
+    const endDateSub = new Date(endDate);
+    if (startDateSub > endDateSub) {
+      res.status(400).json({ message: "Start date must be before end date" });
+      return;
+    }
     await subscriptionsRepo.update(
       { id },
       {
         userId,
         planId,
-        startDate,
-        endDate,
+        startDate: startDateSub,
+        endDate: endDateSub,
         paymentStatus: "pending",
         renewalStatus,
       },
