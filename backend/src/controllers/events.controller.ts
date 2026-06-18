@@ -36,7 +36,6 @@ export async function createEvent(req: Request, res: Response): Promise<void> {
       location,
       price,
       capacity,
-
       coverImage,
       language,
     } = req.body as Event;
