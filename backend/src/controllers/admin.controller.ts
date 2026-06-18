@@ -36,8 +36,11 @@ export async function getAdmins(req: Request, res: Response): Promise<void> {
 
 export async function getAdminById(req: Request, res: Response): Promise<void> {
   try {
-    const { adminId } = req.params as { adminId: string };
-    const admin = await adminsRepo.findOneBy({ id: adminId, isActive: true });
+    const { id } = req.params as { id: string };
+    const admin = await adminsRepo.findOneBy({
+      id: id,
+      isActive: true as boolean,
+    });
     if (!admin) {
       res.status(404).json({ message: "Admin not found" });
       return;

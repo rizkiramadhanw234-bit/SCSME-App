@@ -2,6 +2,7 @@ import express, { Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
+import path from "path";
 import { testDbConnection } from "./config/db";
 import adminRouter from "./routes/admin.route";
 import userRouter from "./routes/user.route";
@@ -12,6 +13,8 @@ import paymentRouter from "./routes/payment.route";
 import companyRouter from "./routes/company.route";
 import companyVerifyRouter from "./routes/companyVerify.route";
 import eventRouter from "./routes/event.route";
+import paymentAdminVerifyRouter from "./routes/paymentAdminVerify.route";
+import eventRegistrationRouter from "./routes/eventRegistration.route";
 
 dotenv.config();
 testDbConnection();
@@ -36,6 +39,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send("welcome!");
 });
 
+app.use("/public", express.static(path.join(__dirname, "../public")));
+
 app.use("/admin", adminRouter);
 app.use("/user", userRouter);
 app.use("/category", categoryRouter);
@@ -45,5 +50,7 @@ app.use("/payment", paymentRouter);
 app.use("/company", companyRouter);
 app.use("/company-verify", companyVerifyRouter);
 app.use("/event", eventRouter);
+app.use("/payment-admin-verify", paymentAdminVerifyRouter);
+app.use("/event-registration", eventRegistrationRouter);
 
 export default app;

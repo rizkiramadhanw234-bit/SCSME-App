@@ -22,18 +22,22 @@ import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
+// admin
 router.get("/", getAdmins);
-router.get("/get/email", authMiddleware, isAdmin, getAdminByEmail);
-router.get("/get/:id", authMiddleware, isAdmin, getAdminById);
-router.post("/create", createAdmin);
-router.put("/update/:id", authMiddleware, isAdmin, updateAdmin);
-router.post("/login", loginAdmin);
+router.get("/:id", authMiddleware, getAdminById);
+router.get("/email", authMiddleware, getAdminByEmail);
 router.post("/logout", authMiddleware, logoutAdmiin);
+router.put("/update/:id", authMiddleware, updateAdmin);
 router.delete("/delete/:id", authMiddleware, isAdmin, deleteAdmin);
 
-router.get("/users", authMiddleware, isAdmin, getUsers);
-router.get("/user/email", authMiddleware, isAdmin, getUserByEmail);
-router.get("/user/search", authMiddleware, isAdmin, searchUserByName);
-router.delete("/user/:id", authMiddleware, isAdmin, deleteUser);
+// user
+router.get("/users", authMiddleware, getUsers);
+router.get("/user/email", authMiddleware, getUserByEmail);
+router.get("/user/search", authMiddleware, searchUserByName);
+router.delete("/user/:id", authMiddleware, deleteUser);
+
+// auth
+router.post("/create", createAdmin);
+router.post("/login", loginAdmin);
 
 export default router;

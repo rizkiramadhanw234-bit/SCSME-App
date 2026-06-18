@@ -11,6 +11,13 @@ export async function getSubscriptions(
 ): Promise<void> {
   try {
     const getSubscriptions = await subscriptionsRepo.find();
+    const endDate = getSubscriptions.map((exp) => exp.endDate);
+    const today = new Date();
+    const isExpired = endDate.map((exp) => new Date(exp) < today);
+    if (isExpired) {
+      res.status(200).json({ message: "subscription expired" });
+      return;
+    }
     res
       .status(200)
       .json({ message: "Subscriptions fetched", data: getSubscriptions });
@@ -28,6 +35,13 @@ export async function getSubscriptionById(
     const getSubscription = await subscriptionsRepo.findOneBy({ id });
     if (!getSubscription) {
       res.status(404).json({ message: "Subscription not found" });
+      return;
+    }
+
+    const today = new Date();
+    const isExpired = new Date(getSubscription.endDate) < today;
+    if (isExpired) {
+      res.status(400).json({ message: "Subscription is expired" });
       return;
     }
     res
@@ -105,18 +119,15 @@ export async function upgradeSubscription(
       res.status(400).json({ message: "Start date must be before end date" });
       return;
     }
-    await subscriptionsRepo.update(
-      { id },
-      {
-        userId,
-        planId,
-        startDate: startDateSub,
-        endDate: endDateSub,
-        paymentStatus: "pending",
-        renewalStatus,
-      },
-    );
-    const upgradedSubscription = await subscriptionsRepo.findOneBy({ id });
+    const upgradedSubscription = await subscriptionsRepo.save({
+      ...currentSubscription,
+      userId,
+      planId,
+      startDate: startDateSub,
+      endDate: endDateSub,
+      paymentStatus: "pending",
+      renewalStatus,
+    });
     res
       .status(200)
       .json({ message: "Subscription updated", data: upgradedSubscription });

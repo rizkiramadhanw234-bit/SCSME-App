@@ -55,15 +55,23 @@ export async function verifiedCompany(
       res.status(404).json({ message: "Company not found" });
       return;
     }
-    const isVerified = company.verificationStatus === "verified";
+    const isVerified = verificationStatus === "verified";
+    const isRejected = verificationStatus === "rejected";
     if (isVerified) {
       res.status(400).json({ message: "Company is already verified" });
     }
-    company.verificationStatus = verificationStatus;
-    await companiesRepo.update({ id }, company);
-    res
-      .status(400)
-      .json({ message: "Company is already verified", data: company });
+    const updatedStatusCompany = await companiesRepo.save({
+      ...company,
+      verificationStatus: isVerified
+        ? "verified"
+        : isRejected
+          ? "rejected"
+          : "pending",
+    });
+    res.status(400).json({
+      message: "Company is already verified",
+      data: updatedStatusCompany,
+    });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
