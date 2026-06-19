@@ -1,10 +1,12 @@
 import { Request, Response } from "express";
 import { Payment } from "../entities/payment.entity";
 import { Subscription } from "../entities/subscription.entity";
+import { EventRegistration } from "../entities/event-registration.entity";
 import { AppDataSource } from "../config/db";
 
 const paymentsRepo = AppDataSource.getRepository(Payment);
 const subscriptionsRepo = AppDataSource.getRepository(Subscription);
+const eventRegistrationsRepo = AppDataSource.getRepository(EventRegistration);
 
 export async function createPayment(
   req: Request,
@@ -15,8 +17,11 @@ export async function createPayment(
       req.body as Payment;
 
     const pendingSubscription = await subscriptionsRepo.findOneBy({ userId });
-    if (!pendingSubscription) {
-      res.status(404).json({ message: "subscription not found" });
+    const pendingEventRegistration = await eventRegistrationsRepo.findOneBy({
+      userId,
+    });
+    if (!pendingSubscription && !pendingEventRegistration) {
+      res.status(404).json({ message: "order not found" });
       return;
     }
 
@@ -56,7 +61,7 @@ export async function uploadProofPayment(
 
     const fileUploaded = await paymentsRepo.save({
       ...payment,
-      proofUrl: `${process.env.BASE_URL}/public/invoiceProof/${file.filename}`,
+      proofUrl: `${process.env.BASE_URL}/public/invoiceProof/${file}`,
     });
 
     if (!fileUploaded) {
@@ -65,7 +70,6 @@ export async function uploadProofPayment(
     }
     res.status(200).json({ message: "Proof uploaded" });
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

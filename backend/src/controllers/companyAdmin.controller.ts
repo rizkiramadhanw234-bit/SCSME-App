@@ -57,9 +57,7 @@ export async function verifiedCompany(
     }
     const isVerified = verificationStatus === "verified";
     const isRejected = verificationStatus === "rejected";
-    if (isVerified) {
-      res.status(400).json({ message: "Company is already verified" });
-    }
+
     const updatedStatusCompany = await companiesRepo.save({
       ...company,
       verificationStatus: isVerified
@@ -69,7 +67,7 @@ export async function verifiedCompany(
           : "pending",
     });
     res.status(400).json({
-      message: "Company is already verified",
+      message: "Company fetched",
       data: updatedStatusCompany,
     });
   } catch (error) {

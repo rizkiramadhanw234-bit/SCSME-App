@@ -1,7 +1,7 @@
 import { Router } from "express";
 import {
   getRegistrations,
-  cancelRegistration,
+  deleteRegistration,
   createRegistration,
   getRegistrationById,
 } from "../controllers/eventRegistration.controller";
@@ -12,6 +12,6 @@ const router = Router();
 router.get("/", getRegistrations);
 router.get("/:id", authMiddleware, getRegistrationById);
 router.post("/create", authMiddleware, createRegistration);
-router.put("/cancel/:id", authMiddleware, cancelRegistration);
+router.delete("/delete/:id", authMiddleware, deleteRegistration);
 
 export default router;

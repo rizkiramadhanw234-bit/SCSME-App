@@ -13,7 +13,7 @@ const router = Router();
 router.get("/", getPayments);
 router.get("/pending", authMiddleware, getPendingPaymentStatus);
 router.get("/:id", authMiddleware, getPaymentById);
-router.put("/verify/:id", authMiddleware, updatePaymentStatus);
+router.patch("/verify/:id", authMiddleware, updatePaymentStatus);
 router.delete("/delete/:id", authMiddleware, deletePayment);
 
 export default router;

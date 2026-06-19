@@ -11,13 +11,13 @@ export async function getSubscriptions(
 ): Promise<void> {
   try {
     const getSubscriptions = await subscriptionsRepo.find();
-    const endDate = getSubscriptions.map((exp) => exp.endDate);
-    const today = new Date();
-    const isExpired = endDate.map((exp) => new Date(exp) < today);
-    if (isExpired) {
-      res.status(200).json({ message: "subscription expired" });
-      return;
-    }
+    // const endDate = getSubscriptions.map((exp) => exp.endDate);
+    // const today = new Date();
+    // const isExpired = endDate.map((exp) => new Date(exp) < today);
+    // if (isExpired) {
+    //   res.status(200).json({ message: "subscription expired" });
+    //   return;
+    // }
     res
       .status(200)
       .json({ message: "Subscriptions fetched", data: getSubscriptions });
