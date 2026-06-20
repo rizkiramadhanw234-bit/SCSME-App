@@ -2,7 +2,6 @@ import { Router } from "express";
 import {
   getPayments,
   createPayment,
-  uploadProofPayment,
   getPaymentById,
   deletePayment,
 } from "../controllers/payment.controller";
@@ -13,12 +12,11 @@ const router = Router();
 
 router.get("/", getPayments);
 router.get("/:id", authMiddleware, getPaymentById);
-router.post("/create", authMiddleware, createPayment);
 router.post(
-  "/upload/:id",
+  "/create",
   authMiddleware,
   uploadProof.single("proofUrl"),
-  uploadProofPayment,
+  createPayment,
 );
 router.delete("/delete/:id", authMiddleware, deletePayment);
 

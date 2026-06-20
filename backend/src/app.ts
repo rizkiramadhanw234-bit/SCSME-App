@@ -15,6 +15,7 @@ import companyVerifyRouter from "./routes/companyVerify.route";
 import eventRouter from "./routes/event.route";
 import paymentAdminVerifyRouter from "./routes/paymentAdminVerify.route";
 import eventRegistrationRouter from "./routes/eventRegistration.route";
+import resourcesRouter from "./routes/resources.route";
 
 dotenv.config();
 testDbConnection();
@@ -52,5 +53,6 @@ app.use("/company-verify", companyVerifyRouter);
 app.use("/event", eventRouter);
 app.use("/payment-admin-verify", paymentAdminVerifyRouter);
 app.use("/event-registration", eventRegistrationRouter);
+app.use("/resources", resourcesRouter);
 
 export default app;

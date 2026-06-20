@@ -13,8 +13,8 @@ export async function createPayment(
   res: Response,
 ): Promise<void> {
   try {
-    const { userId, orderId, orderType, amount, proofUrl } =
-      req.body as Payment;
+    const { userId, orderId, orderType, amount } = req.body as Payment;
+    const proofUrl = req.file as Express.Multer.File;
 
     const pendingSubscription = await subscriptionsRepo.findOneBy({ userId });
     const pendingEventRegistration = await eventRegistrationsRepo.findOneBy({
@@ -32,7 +32,7 @@ export async function createPayment(
       amount,
       paymentStatus: "pending",
       invoiceUrl: `${process.env.BASE_URL}/public/qrCodeBank/qrCode.png`,
-      proofUrl,
+      proofUrl: `${process.env.BASE_URL}/public/invoiceProof/${proofUrl.filename}`,
     });
 
     if (!newPayment) {
@@ -40,35 +40,6 @@ export async function createPayment(
       return;
     }
     res.status(201).json({ message: "Payment created", data: newPayment });
-  } catch (error) {
-    res.status(500).json({ message: "Internal server error" });
-  }
-}
-
-export async function uploadProofPayment(
-  req: Request,
-  res: Response,
-): Promise<void> {
-  try {
-    const { id } = req.params as { id: string };
-    const file = req.file as Express.Multer.File;
-
-    const payment = await paymentsRepo.findOneBy({ id });
-    if (!payment) {
-      res.status(404).json({ message: "Payment not found" });
-      return;
-    }
-
-    const fileUploaded = await paymentsRepo.save({
-      ...payment,
-      proofUrl: `${process.env.BASE_URL}/public/invoiceProof/${file}`,
-    });
-
-    if (!fileUploaded) {
-      res.status(404).json({ message: "Failed to upload proof" });
-      return;
-    }
-    res.status(200).json({ message: "Proof uploaded" });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
