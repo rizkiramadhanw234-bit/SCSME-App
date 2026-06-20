@@ -106,3 +106,30 @@ export async function deleteRegistration(
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export async function verifyPaymentEventRegistration(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const { id } = req.params as { id: string };
+    const { paymentStatus } = req.body as EventRegistration;
+    const registration = await eventRegistrationsRepo.findOneBy({ id });
+    if (!registration) {
+      res.status(404).json({ message: "Registration not found" });
+      return;
+    }
+
+    const isPaid = paymentStatus === "paid";
+    const isRefunded = paymentStatus === "refunded";
+    const updatedRegistration = await eventRegistrationsRepo.save({
+      ...registration,
+      paymentStatus: isPaid ? "paid" : isRefunded ? "refunded" : "pending",
+    });
+    res
+      .status(200)
+      .json({ message: "Registration verified", data: updatedRegistration });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

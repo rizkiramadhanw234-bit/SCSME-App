@@ -11,13 +11,15 @@ export async function getSubscriptions(
 ): Promise<void> {
   try {
     const getSubscriptions = await subscriptionsRepo.find();
-    // const endDate = getSubscriptions.map((exp) => exp.endDate);
-    // const today = new Date();
-    // const isExpired = endDate.map((exp) => new Date(exp) < today);
-    // if (isExpired) {
-    //   res.status(200).json({ message: "subscription expired" });
-    //   return;
-    // }
+    const today = new Date();
+    const expiredSubscriptions = getSubscriptions.filter(
+      (expSub: Subscription) => {
+        return new Date(expSub.endDate) < today;
+      },
+    );
+    if (expiredSubscriptions.length > 0) {
+      res.status(400).json({ message: "Some subscriptions are expired" });
+    }
     res
       .status(200)
       .json({ message: "Subscriptions fetched", data: getSubscriptions });
@@ -141,6 +143,32 @@ export async function deleteSubscription(req: Request, res: Response) {
     const { id } = req.params as { id: string };
     await subscriptionsRepo.delete({ id });
     res.status(200).json({ message: "Subscription deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function verifyPaymentSubscription(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const { id } = req.params as { id: string };
+    const { paymentStatus } = req.body as Subscription;
+    const subscription = await subscriptionsRepo.findOneBy({ id });
+    if (!subscription) {
+      res.status(404).json({ message: "Subscription not found" });
+      return;
+    }
+    const isPaid = paymentStatus === "paid";
+    const isFfailed = paymentStatus === "failed";
+    const updatedSubscription = await subscriptionsRepo.save({
+      ...subscription,
+      paymentStatus: isPaid ? "paid" : isFfailed ? "failed" : "pending",
+    });
+    res
+      .status(200)
+      .json({ message: "Subscription verified", data: updatedSubscription });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

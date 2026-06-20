@@ -5,6 +5,7 @@ import {
   createSubscription,
   upgradeSubscription,
   deleteSubscription,
+  verifyPaymentSubscription,
 } from "../controllers/subscription.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 
@@ -15,5 +16,8 @@ router.get("/:id", authMiddleware, getSubscriptionById);
 router.post("/create", authMiddleware, createSubscription);
 router.put("/upgrade/:id", authMiddleware, upgradeSubscription);
 router.delete("/delete/:id", authMiddleware, deleteSubscription);
+
+// admin verify
+router.patch("/verify/:id", authMiddleware, verifyPaymentSubscription);
 
 export default router;
