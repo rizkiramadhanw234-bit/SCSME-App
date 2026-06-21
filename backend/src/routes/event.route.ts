@@ -9,6 +9,7 @@ import {
 
 const router = Router();
 
+//admin
 router.get("/", getEvents);
 router.get("/:id", getEventById);
 router.post("/create", createEvent);

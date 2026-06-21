@@ -11,6 +11,7 @@ import { isAdmin } from "../middleware/admin.middleware";
 
 const router = Router();
 
+// admin
 router.get("/", getCategories);
 router.get("/:id", authMiddleware, getCategoryById);
 router.post("/create", authMiddleware, isAdmin, createCategory);

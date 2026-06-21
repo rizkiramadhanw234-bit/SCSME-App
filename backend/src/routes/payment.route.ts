@@ -10,6 +10,7 @@ import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
+// user
 router.get("/", getPayments);
 router.get("/:id", authMiddleware, getPaymentById);
 router.post(

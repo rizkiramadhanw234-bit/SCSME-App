@@ -88,6 +88,25 @@ export async function createRegistration(
   }
 }
 
+export async function getQrCodeEventRegistration(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const { id } = req.params as { id: string };
+    const registration = await eventRegistrationsRepo.findOneBy({ id });
+    if (!registration) {
+      res.status(404).json({ message: "Registration not found" });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: "Registration fetched", data: registration.qrCode });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export async function deleteRegistration(
   req: Request,
   res: Response,

@@ -1,5 +1,5 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from "typeorm";
-import { ResourcePurchase } from "./resource-purchase.entity";
+import { Entity, Column, OneToMany } from "typeorm";
+import { ResourcePurchases } from "./resource-purchases.entity";
 import { BaseEntity } from "./base";
 
 @Entity("resources")
@@ -42,6 +42,6 @@ export class Resource extends BaseEntity {
   metaDescription: string | null;
 
   // Relations
-  @OneToMany(() => ResourcePurchase, (purchase) => purchase.resource)
-  purchases: ResourcePurchase[];
+  @OneToMany(() => ResourcePurchases, (purchase) => purchase.resource)
+  purchases: ResourcePurchases[];
 }

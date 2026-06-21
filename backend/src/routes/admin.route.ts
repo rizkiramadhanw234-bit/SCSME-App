@@ -30,7 +30,7 @@ router.post("/logout", authMiddleware, logoutAdmiin);
 router.put("/update/:id", authMiddleware, updateAdmin);
 router.delete("/delete/:id", authMiddleware, isAdmin, deleteAdmin);
 
-// user
+// get user by admin
 router.get("/users", authMiddleware, getUsers);
 router.get("/user/email", authMiddleware, getUserByEmail);
 router.get("/user/search", authMiddleware, searchUserByName);

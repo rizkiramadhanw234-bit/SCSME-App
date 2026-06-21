@@ -11,6 +11,7 @@ import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
+// user
 router.get("/", getSubscriptions);
 router.get("/:id", authMiddleware, getSubscriptionById);
 router.post("/create", authMiddleware, createSubscription);

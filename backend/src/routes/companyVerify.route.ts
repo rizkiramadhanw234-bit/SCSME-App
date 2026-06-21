@@ -8,6 +8,7 @@ import {
 
 const router = Router();
 
+// admin
 router.get("/", getCompanies);
 router.get("/:id", getCompanyById);
 router.patch("/status/:id", verifiedCompany);

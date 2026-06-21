@@ -16,6 +16,7 @@ import eventRouter from "./routes/event.route";
 import paymentAdminVerifyRouter from "./routes/paymentAdminVerify.route";
 import eventRegistrationRouter from "./routes/eventRegistration.route";
 import resourcesRouter from "./routes/resources.route";
+import resourcesPurchasesRouter from "./routes/resourcePurchases.route";
 
 dotenv.config();
 testDbConnection();
@@ -54,5 +55,6 @@ app.use("/event", eventRouter);
 app.use("/payment-admin-verify", paymentAdminVerifyRouter);
 app.use("/event-registration", eventRegistrationRouter);
 app.use("/resources", resourcesRouter);
+app.use("/resource-purchases", resourcesPurchasesRouter);
 
 export default app;

@@ -3,7 +3,7 @@ import { User } from "./user.entity";
 import { Company } from "./company.entity";
 import { Subscription } from "./subscription.entity";
 import { EventRegistration } from "./event-registration.entity";
-import { ResourcePurchase } from "./resource-purchase.entity";
+import { ResourcePurchases } from "./resource-purchases.entity";
 import { PaidUpload } from "./paid-upload.entity";
 import { Payment } from "./payment.entity";
 import { Event } from "./event.entity";
@@ -20,7 +20,7 @@ export const entities = [
   Category,
   Subscription,
   EventRegistration,
-  ResourcePurchase,
+  ResourcePurchases,
   PaidUpload,
   Payment,
   Event,

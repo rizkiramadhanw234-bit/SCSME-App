@@ -10,6 +10,7 @@ import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
+// admin
 router.get("/", getPayments);
 router.get("/pending", authMiddleware, getPendingPaymentStatus);
 router.get("/:id", authMiddleware, getPaymentById);

@@ -11,6 +11,7 @@ import { uploadResources } from "../helper/uploadResources";
 
 const router = Router();
 
+// admin
 router.get("/", getResources);
 router.get("/type/:type", getResourcesByType);
 router.get("/:id", getResourceById);

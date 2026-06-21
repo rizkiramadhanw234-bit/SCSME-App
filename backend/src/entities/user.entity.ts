@@ -3,7 +3,7 @@ import { BaseEntity } from "./base";
 import { Company } from "./company.entity";
 import { Subscription } from "./subscription.entity";
 import { EventRegistration } from "./event-registration.entity";
-import { ResourcePurchase } from "./resource-purchase.entity";
+import { ResourcePurchases } from "./resource-purchases.entity";
 import { PaidUpload } from "./paid-upload.entity";
 import { Payment } from "./payment.entity";
 
@@ -45,8 +45,8 @@ export class User extends BaseEntity {
   @OneToMany(() => EventRegistration, (registration) => registration.user)
   eventRegistrations: EventRegistration[];
 
-  @OneToMany(() => ResourcePurchase, (purchase) => purchase.user)
-  resourcePurchases: ResourcePurchase[];
+  @OneToMany(() => ResourcePurchases, (purchase) => purchase.user)
+  resourcePurchases: ResourcePurchases[];
 
   @OneToMany(() => PaidUpload, (paidUpload) => paidUpload.user)
   paidUploads: PaidUpload[];

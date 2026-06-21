@@ -11,6 +11,7 @@ import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
+// user
 router.get("/", getCompanies);
 router.get("/search", authMiddleware, searchCompanyByName);
 router.get("/:id", authMiddleware, getCompanyById);

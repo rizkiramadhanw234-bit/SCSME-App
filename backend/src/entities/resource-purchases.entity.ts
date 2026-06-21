@@ -4,7 +4,7 @@ import { User } from "./user.entity";
 import { BaseEntity } from "./base";
 
 @Entity("resource_purchases")
-export class ResourcePurchase extends BaseEntity {
+export class ResourcePurchases extends BaseEntity {
   @Column({ name: "resource_id", type: "char", length: 36 })
   resourceId: string;
 

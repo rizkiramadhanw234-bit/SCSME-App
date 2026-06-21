@@ -2,11 +2,13 @@ import { Request, Response } from "express";
 import { Payment } from "../entities/payment.entity";
 import { Subscription } from "../entities/subscription.entity";
 import { EventRegistration } from "../entities/event-registration.entity";
+import { ResourcePurchases } from "../entities/resource-purchases.entity";
 import { AppDataSource } from "../config/db";
 
 const paymentsRepo = AppDataSource.getRepository(Payment);
 const subscriptionsRepo = AppDataSource.getRepository(Subscription);
 const eventRegistrationsRepo = AppDataSource.getRepository(EventRegistration);
+const resourcePurchasesRepo = AppDataSource.getRepository(ResourcePurchases);
 
 export async function createPayment(
   req: Request,
@@ -20,7 +22,14 @@ export async function createPayment(
     const pendingEventRegistration = await eventRegistrationsRepo.findOneBy({
       userId,
     });
-    if (!pendingSubscription && !pendingEventRegistration) {
+    const pendingResourcePurchases = await resourcePurchasesRepo.findOneBy({
+      userId,
+    });
+    if (
+      !pendingSubscription &&
+      !pendingEventRegistration &&
+      !pendingResourcePurchases
+    ) {
       res.status(404).json({ message: "order not found" });
       return;
     }

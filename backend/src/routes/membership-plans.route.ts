@@ -12,6 +12,7 @@ import { isAdmin } from "../middleware/admin.middleware";
 
 const router = Router();
 
+// admin
 router.get("/", getMembershipPlans);
 router.patch("/isActive/:id", authMiddleware, isAdmin, MembershipPlanIsActive);
 router.get("/get/:id", authMiddleware, getMembershipPlanById);
