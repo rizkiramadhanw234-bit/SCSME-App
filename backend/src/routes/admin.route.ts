@@ -24,16 +24,18 @@ const router = Router();
 
 // admin
 router.get("/", getAdmins);
-router.get("/:id", authMiddleware, getAdminById);
 router.get("/email", authMiddleware, getAdminByEmail);
-router.post("/logout", authMiddleware, logoutAdmiin);
-router.put("/update/:id", authMiddleware, updateAdmin);
-router.delete("/delete/:id", authMiddleware, isAdmin, deleteAdmin);
 
 // get user by admin
 router.get("/users", authMiddleware, getUsers);
 router.get("/user/email", authMiddleware, getUserByEmail);
 router.get("/user/search", authMiddleware, searchUserByName);
+
+// admin
+router.get("/:id", authMiddleware, getAdminById);
+router.post("/logout", authMiddleware, logoutAdmiin);
+router.put("/update/:id", authMiddleware, updateAdmin);
+router.delete("/delete/:id", authMiddleware, isAdmin, deleteAdmin);
 router.delete("/user/:id", authMiddleware, deleteUser);
 
 // auth

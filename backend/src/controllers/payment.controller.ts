@@ -3,12 +3,14 @@ import { Payment } from "../entities/payment.entity";
 import { Subscription } from "../entities/subscription.entity";
 import { EventRegistration } from "../entities/event-registration.entity";
 import { ResourcePurchases } from "../entities/resource-purchases.entity";
+import { PaidUpload } from "../entities/paid-upload.entity";
 import { AppDataSource } from "../config/db";
 
 const paymentsRepo = AppDataSource.getRepository(Payment);
 const subscriptionsRepo = AppDataSource.getRepository(Subscription);
 const eventRegistrationsRepo = AppDataSource.getRepository(EventRegistration);
 const resourcePurchasesRepo = AppDataSource.getRepository(ResourcePurchases);
+const paidUploadsRepo = AppDataSource.getRepository(PaidUpload);
 
 export async function createPayment(
   req: Request,
@@ -25,12 +27,20 @@ export async function createPayment(
     const pendingResourcePurchases = await resourcePurchasesRepo.findOneBy({
       userId,
     });
+    const pendingPaidUpload = await paidUploadsRepo.findOneBy({ userId });
     if (
       !pendingSubscription &&
       !pendingEventRegistration &&
-      !pendingResourcePurchases
+      !pendingResourcePurchases &&
+      !pendingPaidUpload
     ) {
       res.status(404).json({ message: "order not found" });
+      return;
+    }
+
+    const alreadyPaid = await paymentsRepo.findOneBy({ orderId, userId });
+    if (alreadyPaid) {
+      res.status(400).json({ message: "Already paid" });
       return;
     }
 

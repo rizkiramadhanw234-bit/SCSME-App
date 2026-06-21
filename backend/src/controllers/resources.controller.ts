@@ -144,3 +144,22 @@ export async function deleteResource(
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export async function downloadResources(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const { id } = req.params as { id: string };
+    const resource = await resourcesRepo.findOneBy({ id });
+    if (!resource) {
+      res.status(404).json({ message: "Resource not found" });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: "Resource fetched", data: resource.fileUrl });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

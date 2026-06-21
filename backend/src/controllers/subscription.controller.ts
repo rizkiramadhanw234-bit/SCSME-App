@@ -4,6 +4,7 @@ import { MembershipPlan } from "../entities/membership-plan.entity";
 import { AppDataSource } from "../config/db";
 
 const subscriptionsRepo = AppDataSource.getRepository(Subscription);
+const membershipPlansRepo = AppDataSource.getRepository(MembershipPlan);
 
 export async function getSubscriptions(
   req: Request,
@@ -57,9 +58,7 @@ export async function getSubscriptionById(
 
 export async function createSubscription(req: Request, res: Response) {
   try {
-    const { userId, planId, startDate, endDate, renewalStatus } =
-      req.body as Subscription;
-    const membershipPlansRepo = AppDataSource.getRepository(MembershipPlan);
+    const { userId, planId, renewalStatus } = req.body as Subscription;
     const membershipPlan = await membershipPlansRepo.findOneBy({ id: planId });
     if (!membershipPlan) {
       res.status(404).json({ message: "Membership plan not found" });
@@ -69,21 +68,22 @@ export async function createSubscription(req: Request, res: Response) {
       res.status(400).json({ message: "Membership plan is not active" });
       return;
     }
-    const startDateSub = new Date(startDate);
-    const endDateSub = new Date(endDate);
-    if (startDateSub > endDateSub) {
-      res.status(400).json({ message: "Start date must be before end date" });
+    const alreadySubscribed = await subscriptionsRepo.findOneBy({ userId });
+    if (alreadySubscribed) {
+      res.status(400).json({ message: "User already has a subscription" });
       return;
     }
+    const startDate = new Date();
+    const endDate = new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000);
+
     const newSubscription = await subscriptionsRepo.save({
       userId,
       planId,
-      startDate: startDateSub,
-      endDate: endDateSub,
+      startDate,
+      endDate,
       paymentStatus: "pending",
       renewalStatus,
     });
-
     res
       .status(201)
       .json({ message: "Subscription created", data: newSubscription });
@@ -98,14 +98,12 @@ export async function upgradeSubscription(
 ): Promise<void> {
   try {
     const { id } = req.params as { id: string };
-    const { userId, planId, startDate, endDate, renewalStatus } =
-      req.body as Subscription;
+    const { userId, planId, renewalStatus } = req.body as Subscription;
     const currentSubscription = await subscriptionsRepo.findOneBy({ id });
     if (!currentSubscription) {
       res.status(404).json({ message: "Subscription not found or expired" });
       return;
     }
-    const membershipPlansRepo = AppDataSource.getRepository(MembershipPlan);
     const membershipPlan = await membershipPlansRepo.findOneBy({ id: planId });
     if (!membershipPlan) {
       res.status(404).json({ message: "Membership plan not found" });
@@ -115,18 +113,14 @@ export async function upgradeSubscription(
       res.status(400).json({ message: "Membership plan is not active" });
       return;
     }
-    const startDateSub = new Date(startDate);
-    const endDateSub = new Date(endDate);
-    if (startDateSub > endDateSub) {
-      res.status(400).json({ message: "Start date must be before end date" });
-      return;
-    }
+    const startDate = new Date();
+    const endDate = new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000);
     const upgradedSubscription = await subscriptionsRepo.save({
       ...currentSubscription,
       userId,
       planId,
-      startDate: startDateSub,
-      endDate: endDateSub,
+      startDate,
+      endDate,
       paymentStatus: "pending",
       renewalStatus,
     });
