@@ -27,16 +27,16 @@ router.get("/", getAdmins);
 router.get("/email", authMiddleware, getAdminByEmail);
 
 // get user by admin
-router.get("/users", authMiddleware, getUsers);
-router.get("/user/email", authMiddleware, getUserByEmail);
-router.get("/user/search", authMiddleware, searchUserByName);
+router.get("/users", authMiddleware, isAdmin, getUsers);
+router.get("/user/email", authMiddleware, isAdmin, getUserByEmail);
+router.get("/user/search", authMiddleware, isAdmin, searchUserByName);
 
 // admin
 router.get("/:id", authMiddleware, getAdminById);
 router.post("/logout", authMiddleware, logoutAdmiin);
-router.put("/update/:id", authMiddleware, updateAdmin);
+router.put("/update/:id", authMiddleware, isAdmin, updateAdmin);
 router.delete("/delete/:id", authMiddleware, isAdmin, deleteAdmin);
-router.delete("/user/:id", authMiddleware, deleteUser);
+router.delete("/user/:id", authMiddleware, isAdmin, deleteUser);
 
 // auth
 router.post("/create", createAdmin);

@@ -6,16 +6,18 @@ import {
   getRsourcePurchasesById,
   verifyPayment,
 } from "../controllers/resourcePurchases.controller";
+import { authMiddleware } from "../middleware/auth.middleware";
+import { isAdmin } from "../middleware/admin.middleware";
 
 const router = Router();
 
 // user
-router.post("/create/:id", createResourcePurchases);
-router.delete("/delete/:id", deleteResourcePurchases);
+router.post("/create/:id", authMiddleware, createResourcePurchases);
+router.delete("/delete/:id", authMiddleware, deleteResourcePurchases);
 
 // admin
-router.patch("/verify/:id", verifyPayment);
-router.get("/", getResourcePurchases);
-router.get("/:id", getRsourcePurchasesById);
+router.patch("/verify/:id", authMiddleware, isAdmin, verifyPayment);
+router.get("/", authMiddleware, isAdmin, getResourcePurchases);
+router.get("/:id", authMiddleware, isAdmin, getRsourcePurchasesById);
 
 export default router;

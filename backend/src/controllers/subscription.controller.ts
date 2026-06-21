@@ -74,8 +74,8 @@ export async function createSubscription(req: Request, res: Response) {
       return;
     }
     const startDate = new Date();
-    const endDate = new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000);
-
+    const endDate = new Date(startDate);
+    endDate.setFullYear(endDate.getFullYear() + 1);
     const newSubscription = await subscriptionsRepo.save({
       userId,
       planId,

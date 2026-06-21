@@ -5,13 +5,17 @@ import { AppDataSource } from "../config/db";
 export async function isAdmin(req: Request, res: Response, next: NextFunction) {
   try {
     const adminRepo = AppDataSource.getRepository(Admin);
-    const { adminId } = req.user as { adminId: string };
+    const { adminId } = req.user as { adminId?: string };
+    if (!adminId) {
+      res.status(401).json({ message: "Access denied" });
+      return;
+    }
     const admin = await adminRepo.findOneBy({ id: adminId });
     if (!admin) {
       res.status(404).json({ message: "Admin not found" });
       return;
     }
-    if (admin.adminRole !== "super_admin") {
+    if (admin.adminRole !== "super_admin" && admin.adminRole !== "staff") {
       res.status(403).json({ message: "Access denied" });
       return;
     }

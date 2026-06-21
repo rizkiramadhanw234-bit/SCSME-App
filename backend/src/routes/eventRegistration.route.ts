@@ -8,6 +8,7 @@ import {
   getQrCodeEventRegistration,
 } from "../controllers/eventRegistration.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
+import { isAdmin } from "../middleware/admin.middleware";
 
 const router = Router();
 
@@ -19,6 +20,11 @@ router.post("/create", authMiddleware, createRegistration);
 router.delete("/delete/:id", authMiddleware, deleteRegistration);
 
 // admin
-router.patch("/verify/:id", authMiddleware, verifyPaymentEventRegistration);
+router.patch(
+  "/verify/:id",
+  authMiddleware,
+  isAdmin,
+  verifyPaymentEventRegistration,
+);
 
 export default router;

@@ -7,14 +7,15 @@ import {
   updatePaymentStatus,
 } from "../controllers/paymentAdminVerify.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
+import { isAdmin } from "../middleware/admin.middleware";
 
 const router = Router();
 
 // admin
 router.get("/", getPayments);
-router.get("/pending", authMiddleware, getPendingPaymentStatus);
-router.get("/:id", authMiddleware, getPaymentById);
-router.patch("/verify/:id", authMiddleware, updatePaymentStatus);
-router.delete("/delete/:id", authMiddleware, deletePayment);
+router.get("/pending", authMiddleware, isAdmin, getPendingPaymentStatus);
+router.get("/:id", authMiddleware, isAdmin, getPaymentById);
+router.patch("/verify/:id", authMiddleware, isAdmin, updatePaymentStatus);
+router.delete("/delete/:id", authMiddleware, isAdmin, deletePayment);
 
 export default router;

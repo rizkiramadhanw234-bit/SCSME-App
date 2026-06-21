@@ -145,138 +145,223 @@ Plan Hierarchy: Basic (level 1) < Standard (level 2) < Corporate (level 3)
 
 ## 6. API Endpoints (ExpressJS)
 
-### Auth — Member side
+# SCSME APP — API Endpoints
 
-```
-POST   /api/auth/register
-POST   /api/auth/login
-POST   /api/auth/refresh
-POST   /api/auth/logout
-```
+**Base URL:** `http://localhost:5000`
 
-### Auth — Admin side (separate table & tokens)
+**Auth Header:** `Authorization: Bearer <token>`
 
-```
-POST   /api/admin/auth/login
-POST   /api/admin/auth/refresh
-POST   /api/admin/auth/logout
-```
+| Label     | Keterangan                           |
+| --------- | ------------------------------------ |
+| `—`       | Tidak butuh auth                     |
+| `[auth]`  | Butuh token (user atau admin)        |
+| `[admin]` | Butuh token admin + role admin/staff |
 
-### Users & Companies
+---
 
-```
-GET    /api/users/me
-PUT    /api/users/me
+## Admin `/admin`
 
-POST   /api/companies                    # create company profile
-GET    /api/companies/my                 # user's own company
-PUT    /api/companies/:id                # update company
-GET    /api/companies/:id                # public: for directory
-```
+| Method | Endpoint                   | Auth    |
+| ------ | -------------------------- | ------- |
+| GET    | `/admin/`                  | —       |
+| GET    | `/admin/:id`               | [auth]  |
+| GET    | `/admin/email?email=`      | [auth]  |
+| POST   | `/admin/login`             | —       |
+| POST   | `/admin/create`            | —       |
+| POST   | `/admin/logout`            | [auth]  |
+| PUT    | `/admin/update/:id`        | [admin] |
+| DELETE | `/admin/delete/:id`        | [admin] |
+| GET    | `/admin/users`             | [admin] |
+| GET    | `/admin/user/email?email=` | [admin] |
+| GET    | `/admin/user/search?name=` | [admin] |
+| DELETE | `/admin/user/:id`          | [admin] |
 
-### Categories
+---
 
-```
-GET    /api/categories                   # public: dropdown list for forms
-GET    /api/admin/categories             # admin: full list
-POST   /api/admin/categories             # create
-PATCH  /api/admin/categories/:id         # update
-DELETE /api/admin/categories/:id         #
-```
+## User `/user`
 
-### Membership
+| Method | Endpoint           | Auth   |
+| ------ | ------------------ | ------ |
+| POST   | `/user/register`   | —      |
+| POST   | `/user/login`      | —      |
+| POST   | `/user/logout`     | —      |
+| GET    | `/user/get/:id`    | [auth] |
+| PUT    | `/user/update/:id` | [auth] |
 
-```
-GET    /api/membership/plans             # public: list active plans
-POST   /api/membership/subscribe         # create subscription + payment record
-GET    /api/membership/my-subscription   # current user's active subscription
-```
+---
 
-### Events
+## Category `/category`
 
-```
-GET    /api/events                       # public: list published events
-GET    /api/events/:id                   # public: event detail
-POST   /api/events/:id/register          # member: create registration + payment
-GET    /api/events/:id/qr                # member: get own QR code
-POST   /api/events/:id/checkin           # admin/staff: scan QR, mark attended
-GET    /api/events/:id/certificate       # member: download certificate (post-event)
-GET    /api/events/my                    # member: my registered events
+| Method | Endpoint               | Auth    |
+| ------ | ---------------------- | ------- |
+| GET    | `/category/`           | —       |
+| GET    | `/category/:id`        | [auth]  |
+| POST   | `/category/create`     | [admin] |
+| PUT    | `/category/update/:id` | [admin] |
+| DELETE | `/category/delete/:id` | [admin] |
 
-# Admin
-POST   /api/admin/events                 # create event
-PUT    /api/admin/events/:id             # update event
-DELETE /api/admin/events/:id             # cancel event
-GET    /api/admin/events/:id/attendees   # list registrations
-POST   /api/admin/events/:id/certificates/generate  # bulk generate certs
-```
+---
 
-### Resources
+## Company `/company`
 
-```
-GET    /api/resources                    # filtered by user's access level
-GET    /api/resources/:id
-POST   /api/resources/:id/purchase       # paid resource: create purchase + payment
-GET    /api/resources/:id/download       # check access then return download URL
+| Method | Endpoint                | Auth   |
+| ------ | ----------------------- | ------ |
+| GET    | `/company/`             | —      |
+| GET    | `/company/search?name=` | [auth] |
+| GET    | `/company/:id`          | [auth] |
+| POST   | `/company/create`       | [auth] |
+| PUT    | `/company/update/:id`   | [auth] |
+| DELETE | `/company/delete/:id`   | [auth] |
 
-# Admin
-POST   /api/admin/resources
-PUT    /api/admin/resources/:id
-DELETE /api/admin/resources/:id
-```
+---
 
-### Paid Uploads
+## Company Verify `/company-verify`
 
-```
-POST   /api/uploads                      # create upload draft
-PUT    /api/uploads/:id                  # update draft or submit revision
-POST   /api/uploads/:id/submit           # draft → pending_payment
-POST   /api/uploads/:id/pay             # upload proof → pending_review
-GET    /api/uploads/my                   # user's own uploads
+| Method | Endpoint                     | Auth    |
+| ------ | ---------------------------- | ------- |
+| GET    | `/company-verify/`           | —       |
+| GET    | `/company-verify/:id`        | [admin] |
+| PATCH  | `/company-verify/status/:id` | [admin] |
+| DELETE | `/company-verify/delete/:id` | [admin] |
 
-# Admin
-GET    /api/admin/uploads                # list with ?status= filter
-PUT    /api/admin/uploads/:id/approve    # → scheduled or published
-PUT    /api/admin/uploads/:id/reject     # → rejected
-PUT    /api/admin/uploads/:id/revision   # → revision_required (with notes)
-```
+---
 
-### Ad Placements
+## Event `/event`
 
-```
-POST   /api/placements/:id/impression    # frontend: track impression
-POST   /api/placements/:id/click         # frontend: track click
+| Method | Endpoint            | Auth    |
+| ------ | ------------------- | ------- |
+| GET    | `/event/`           | —       |
+| GET    | `/event/:id`        | [auth]  |
+| POST   | `/event/create`     | [admin] |
+| PUT    | `/event/update/:id` | [admin] |
+| DELETE | `/event/delete/:id` | [admin] |
 
-# Admin
-GET    /api/admin/placements             # performance dashboard
-GET    /api/admin/placements/expiring    # expiring within 7 days
-```
+---
 
-### Payments
+## Event Registration `/event-registration`
 
-```
-POST   /api/payments/proof               # upload manual transfer proof
-GET    /api/payments/invoice/:id         # download invoice
+| Method | Endpoint                         | Auth    |
+| ------ | -------------------------------- | ------- |
+| GET    | `/event-registration/`           | —       |
+| GET    | `/event-registration/:id`        | [auth]  |
+| GET    | `/event-registration/qrcode/:id` | [auth]  |
+| POST   | `/event-registration/create`     | [auth]  |
+| DELETE | `/event-registration/delete/:id` | [auth]  |
+| PATCH  | `/event-registration/verify/:id` | [admin] |
 
-# Admin
-GET    /api/admin/payments               # all payments with ?order_type= filter
-PUT    /api/admin/payments/:id/approve   # confirm manual payment
-PUT    /api/admin/payments/:id/reject    # reject proof, request re-upload
-```
+---
 
-### Admin Supporting
+## Membership Plans `/membership-plans`
 
-```
-GET    /api/admin/dashboard/stats        # total members, revenue, pending counts
-GET    /api/admin/logs                   # audit trail
-GET    /api/admin/expiry                 # subscriptions + uploads expiring soon
+| Method | Endpoint                         | Auth    |
+| ------ | -------------------------------- | ------- |
+| GET    | `/membership-plans/`             | —       |
+| GET    | `/membership-plans/get/:id`      | [admin] |
+| POST   | `/membership-plans/create`       | [admin] |
+| PUT    | `/membership-plans/update/:id`   | [admin] |
+| PATCH  | `/membership-plans/isActive/:id` | [admin] |
+| DELETE | `/membership-plans/delete/:id`   | [admin] |
 
-# Staff management (super_admin only)
-GET    /api/admin/staff
-POST   /api/admin/staff
-PUT    /api/admin/staff/:id
-PUT    /api/admin/staff/:id/deactivate
-```
+---
+
+## Subscription `/subscription`
+
+| Method | Endpoint                    | Auth    |
+| ------ | --------------------------- | ------- |
+| GET    | `/subscription/`            | —       |
+| GET    | `/subscription/:id`         | [auth]  |
+| POST   | `/subscription/create`      | [auth]  |
+| PUT    | `/subscription/upgrade/:id` | [auth]  |
+| DELETE | `/subscription/delete/:id`  | [auth]  |
+| PATCH  | `/subscription/verify/:id`  | [admin] |
+
+---
+
+## Payment `/payment`
+
+| Method | Endpoint              | Auth   |
+| ------ | --------------------- | ------ |
+| GET    | `/payment/`           | —      |
+| GET    | `/payment/:id`        | [auth] |
+| POST   | `/payment/create`     | [auth] |
+| DELETE | `/payment/delete/:id` | [auth] |
+
+> `POST /payment/create` → `multipart/form-data`, field file: `proofUrl`
+
+---
+
+## Payment Admin Verify `/payment-admin-verify`
+
+| Method | Endpoint                           | Auth    |
+| ------ | ---------------------------------- | ------- |
+| GET    | `/payment-admin-verify/`           | —       |
+| GET    | `/payment-admin-verify/pending`    | [admin] |
+| GET    | `/payment-admin-verify/:id`        | [admin] |
+| PATCH  | `/payment-admin-verify/verify/:id` | [admin] |
+| DELETE | `/payment-admin-verify/delete/:id` | [admin] |
+
+---
+
+## Resources (Admin) `/resources`
+
+| Method | Endpoint                  | Auth    |
+| ------ | ------------------------- | ------- |
+| GET    | `/resources/`             | —       |
+| GET    | `/resources/type/:type`   | [admin] |
+| GET    | `/resources/:id`          | [admin] |
+| GET    | `/resources/download/:id` | [admin] |
+| POST   | `/resources/create`       | [admin] |
+| PUT    | `/resources/update/:id`   | [admin] |
+| DELETE | `/resources/delete/:id`   | [admin] |
+
+> `POST/PUT` → `multipart/form-data`, field file: `fileUrl`, `coverImage`
+
+---
+
+## Resources (User) `/user-resources`
+
+| Method | Endpoint                       | Auth        |
+| ------ | ------------------------------ | ----------- |
+| GET    | `/user-resources/`             | — (no auth) |
+| GET    | `/user-resources/isActive`     | [auth]      |
+| GET    | `/user-resources/download/:id` | [auth]      |
+
+---
+
+## Resource Purchases `/resource-purchases`
+
+| Method | Endpoint                         | Auth    |
+| ------ | -------------------------------- | ------- |
+| POST   | `/resource-purchases/create/:id` | [auth]  |
+| DELETE | `/resource-purchases/delete/:id` | [auth]  |
+| GET    | `/resource-purchases/`           | [admin] |
+| GET    | `/resource-purchases/:id`        | [admin] |
+| PATCH  | `/resource-purchases/verify/:id` | [admin] |
+
+---
+
+## Paid Uploads (User) `/paid-uploads`
+
+| Method | Endpoint                   | Auth   |
+| ------ | -------------------------- | ------ |
+| POST   | `/paid-uploads/create`     | [auth] |
+| GET    | `/paid-uploads/:id`        | [auth] |
+| PUT    | `/paid-uploads/update/:id` | [auth] |
+| DELETE | `/paid-uploads/delete/:id` | [auth] |
+
+> `POST/PUT` → `multipart/form-data`, field file: `imageUrl`
+
+---
+
+## Paid Uploads (Admin) `/paid-uploads-admin`
+
+| Method | Endpoint                             | Auth    |
+| ------ | ------------------------------------ | ------- |
+| GET    | `/paid-uploads-admin/`               | —       |
+| GET    | `/paid-uploads-admin/status?status=` | [admin] |
+| PATCH  | `/paid-uploads-admin/approve/:id`    | [admin] |
+| PATCH  | `/paid-uploads-admin/rejected/:id`   | [admin] |
+| PATCH  | `/paid-uploads-admin/revision/:id`   | [admin] |
 
 ---
 
