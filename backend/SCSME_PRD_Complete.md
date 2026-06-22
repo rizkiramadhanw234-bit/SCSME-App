@@ -151,11 +151,11 @@ Plan Hierarchy: Basic (level 1) < Standard (level 2) < Corporate (level 3)
 
 **Auth Header:** `Authorization: Bearer <token>`
 
-| Label     | Keterangan                           |
-| --------- | ------------------------------------ |
-| `—`       | Tidak butuh auth                     |
-| `[auth]`  | Butuh token (user atau admin)        |
-| `[admin]` | Butuh token admin + role admin/staff |
+| Label     | Description                             |
+| --------- | --------------------------------------- |
+| `—`       | No authentication required              |
+| `[auth]`  | Requires Bearer token (user or admin)   |
+| `[admin]` | Requires admin token + admin/staff role |
 
 ---
 
@@ -320,11 +320,11 @@ Plan Hierarchy: Basic (level 1) < Standard (level 2) < Corporate (level 3)
 
 ## Resources (User) `/user-resources`
 
-| Method | Endpoint                       | Auth        |
-| ------ | ------------------------------ | ----------- |
-| GET    | `/user-resources/`             | — (no auth) |
-| GET    | `/user-resources/isActive`     | [auth]      |
-| GET    | `/user-resources/download/:id` | [auth]      |
+| Method | Endpoint                       | Auth               |
+| ------ | ------------------------------ | ------------------ |
+| GET    | `/user-resources/`             | — (optional login) |
+| GET    | `/user-resources/isActive`     | [auth]             |
+| GET    | `/user-resources/download/:id` | [auth]             |
 
 ---
 

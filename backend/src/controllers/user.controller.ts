@@ -168,16 +168,9 @@ export async function updateUser(req: Request, res: Response): Promise<void> {
       res.status(400).json({ message: "No changes" });
       return;
     }
-    if (name) {
-      user.name = name;
-    }
-    if (email) {
-      user.email = email;
-    }
     let hashedPassword = user.password;
     if (password) {
       hashedPassword = await bcrypt.hash(password, 10);
-      user.password = hashedPassword;
     }
     if (password.length < 8) {
       res
@@ -185,16 +178,14 @@ export async function updateUser(req: Request, res: Response): Promise<void> {
         .json({ message: "Password must be at least 8 characters long" });
       return;
     }
-
-    const currentEmail = user.email;
-    const emailExists = await usersRepo.findOneBy({ email: email });
-    if (emailExists && emailExists.email !== currentEmail) {
-      res.status(400).json({ message: "Email already exists" });
-      return;
-    }
-
-    await usersRepo.update({ id }, user);
-    res.status(200).json({ message: "User updated" });
+    const updatedUser = await usersRepo.save({
+      ...user,
+      name,
+      email,
+      password: hashedPassword,
+    });
+    const { password: _, ...userNoPassword } = updatedUser;
+    res.status(200).json({ message: "User updated", data: userNoPassword });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

@@ -136,16 +136,10 @@ export async function updateAdmin(req: Request, res: Response): Promise<void> {
       res.status(400).json({ message: "No changes" });
       return;
     }
-    if (name) {
-      admin.name = name;
-    }
-    if (email) {
-      admin.email = email;
-    }
+
     let hashedPassword = admin.password;
     if (password) {
       hashedPassword = await bcrypt.hash(password, 10);
-      admin.password = hashedPassword;
     }
     if (password.length < 8) {
       res
@@ -153,12 +147,16 @@ export async function updateAdmin(req: Request, res: Response): Promise<void> {
         .json({ message: "Password must be at least 8 characters long" });
       return;
     }
-    if (adminRole) {
-      admin.adminRole = adminRole;
-    }
+    const updatedAdmin = await adminsRepo.save({
+      ...admin,
+      name,
+      email,
+      password: hashedPassword,
+      adminRole,
+    });
 
-    await adminsRepo.update({ id }, admin);
-    res.status(200).json({ message: "admin updated" });
+    const { password: _, ...adminNoPassword } = updatedAdmin;
+    res.status(200).json({ message: "admin updated", data: adminNoPassword });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

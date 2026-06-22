@@ -20,6 +20,7 @@ import resourcesPurchasesRouter from "./routes/resourcePurchases.route";
 import userResourcesRouter from "./routes/resourcesUser.route";
 import paidUpladsUserRouter from "./routes/paidUploadsUser.route";
 import paidUpladsAdminRouter from "./routes/paidUploadsAdmin.route";
+import adPlacementsRouter from "./routes/adPlacements.route";
 
 dotenv.config();
 testDbConnection();
@@ -62,5 +63,6 @@ app.use("/resource-purchases", resourcesPurchasesRouter);
 app.use("/user-resources", userResourcesRouter);
 app.use("/paid-uploads", paidUpladsUserRouter);
 app.use("/paid-uploads-admin", paidUpladsAdminRouter);
+app.use("/ad-placements", adPlacementsRouter);
 
 export default app;
