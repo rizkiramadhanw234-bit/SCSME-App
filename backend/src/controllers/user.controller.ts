@@ -36,8 +36,8 @@ export async function getUsers(req: Request, res: Response): Promise<void> {
 
 export async function getUserById(req: Request, res: Response): Promise<void> {
   try {
-    const { userId } = req.params as { userId: string };
-    const user = await usersRepo.findOneBy({ id: userId });
+    const { id } = req.params as { id: string };
+    const user = await usersRepo.findOneBy({ id });
     if (!user) {
       res.status(404).json({ message: "User not found" });
       return;
@@ -110,7 +110,7 @@ export async function searchUserByName(
 
 export async function createUser(req: Request, res: Response): Promise<void> {
   try {
-    const { name, email, password, role } = req.body as User;
+    const { name, email, phone, password, role } = req.body as User;
     if (!name || !email || !password || !role) {
       res.status(400).json({ message: "Missing required fields" });
       return;
@@ -135,6 +135,7 @@ export async function createUser(req: Request, res: Response): Promise<void> {
     const newUser = await usersRepo.save({
       name,
       email,
+      phone,
       password: hashedPassword,
       role,
     });

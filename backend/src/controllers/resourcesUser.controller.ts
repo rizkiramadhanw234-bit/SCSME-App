@@ -19,7 +19,7 @@ export async function getResourcesUser(
     let accessLevel = ["public"];
 
     if (user) {
-      const isPaid = await resourcePurchasesRepo.findOne({
+      const isPaid = await resourcePurchasesRepo.find({
         where: {
           userId: user.id,
           paymentStatus: "paid",
@@ -33,27 +33,14 @@ export async function getResourcesUser(
         accessLevel = ["member", "public"];
       }
 
-      const paidResources = await resourcePurchasesRepo.find({
-        where: {
-          userId: user.id,
-          paymentStatus: "paid",
-        },
-      });
-      if (!paidResources) {
-        res.status(400).json({ message: "You are not a member" });
-        return;
-      }
-      const accessResources = paidResources.map(
-        (resource) => resource.resourceId,
-      );
-
+      const accessResources = isPaid.map((resource) => resource.resourceId);
       const resources = await resourcesRepo.find({
         where: [
           { accessLevel: In(accessLevel) },
           ...(accessResources.length > 0 ? [{ id: In(accessResources) }] : []),
         ],
       });
-      res.status(200).json({ data: resources });
+      res.status(200).json({ message: "Resources fetched", data: resources });
     }
 
     if (!user) {
@@ -77,25 +64,19 @@ export async function downloadResources(
   try {
     const { id } = req.params as { id: string };
     const resource = await resourcesRepo.findOneBy({ id });
-    const userId = (req.user as { userId: string } | undefined)?.userId;
-    const user = userId ? await userRepo.findOneBy({ id: userId }) : null;
 
     if (!resource) {
       res.status(404).json({ message: "Resource not found" });
       return;
     }
-    if (!user) {
-      res.status(401).json({ message: "Unauthorized" });
-      return;
-    }
 
     const purchased = await resourcePurchasesRepo.findOne({
       where: {
-        userId: user.id,
         resourceId: resource.id,
         paymentStatus: "paid",
       },
     });
+
     if (!purchased) {
       res.status(403).json({ message: "Access denied" });
       return;
@@ -104,7 +85,7 @@ export async function downloadResources(
       .status(200)
       .json({ message: "Resource fetched", data: resource.fileUrl });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

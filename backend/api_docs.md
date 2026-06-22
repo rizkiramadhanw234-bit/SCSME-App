@@ -4,10 +4,10 @@
 
 **Auth Header:** `Authorization: Bearer <token>`
 
-| Label     | Description                          |
-| --------- | ------------------------------------ |
-| `—`       | No authentication required           |
-| `[auth]`  | Requires Bearer token (user or admin)|
+| Label     | Description                             |
+| --------- | --------------------------------------- |
+| `—`       | No authentication required              |
+| `[auth]`  | Requires Bearer token (user or admin)   |
 | `[admin]` | Requires admin token + admin/staff role |
 
 ---
@@ -33,13 +33,14 @@
 
 ## User `/user`
 
-| Method | Endpoint           | Auth   |
-| ------ | ------------------ | ------ |
-| POST   | `/user/register`   | —      |
-| POST   | `/user/login`      | —      |
-| POST   | `/user/logout`     | —      |
-| GET    | `/user/get/:id`    | [auth] |
-| PUT    | `/user/update/:id` | [auth] |
+| Method | Endpoint              | Auth   |
+| ------ | --------------------- | ------ |
+| POST   | `/user/register`      | —      |
+| POST   | `/user/login`         | —      |
+| POST   | `/user/refresh-token` | —      |
+| POST   | `/user/logout`        | —      |
+| GET    | `/user/get/:id`       | [auth] |
+| PUT    | `/user/update/:id`    | [auth] |
 
 ---
 
@@ -173,11 +174,11 @@
 
 ## Resources (User) `/user-resources`
 
-| Method | Endpoint                       | Auth        |
-| ------ | ------------------------------ | ----------- |
+| Method | Endpoint                       | Auth               |
+| ------ | ------------------------------ | ------------------ |
 | GET    | `/user-resources/`             | — (optional login) |
-| GET    | `/user-resources/isActive`     | [auth]      |
-| GET    | `/user-resources/download/:id` | [auth]      |
+| GET    | `/user-resources/isActive`     | [auth]             |
+| GET    | `/user-resources/download/:id` | [auth]             |
 
 ---
 
@@ -220,15 +221,16 @@
 
 ## Ad Placements `/ad-placements`
 
-| Method | Endpoint                        | Auth    |
-| ------ | ------------------------------- | ------- |
-| GET    | `/ad-placements/`               | [admin] |
-| GET    | `/ad-placements/:id`            | [admin] |
-| POST   | `/ad-placements/create`         | [admin] |
-| PUT    | `/ad-placements/update/:id`     | [admin] |
-| DELETE | `/ad-placements/delete/:id`     | [admin] |
+| Method | Endpoint                    | Auth    |
+| ------ | --------------------------- | ------- |
+| GET    | `/ad-placements/`           | [admin] |
+| GET    | `/ad-placements/:id`        | [admin] |
+| POST   | `/ad-placements/create`     | [admin] |
+| PUT    | `/ad-placements/update/:id` | [admin] |
+| DELETE | `/ad-placements/delete/:id` | [admin] |
 
 > `POST /ad-placements/create` — Request Body:
+>
 > ```json
 > {
 >   "paidUpload_id": "string (required)",
@@ -240,6 +242,7 @@
 > ```
 
 > `PUT /ad-placements/update/:id` — Request Body (semua field opsional):
+>
 > ```json
 > {
 >   "page": "string",

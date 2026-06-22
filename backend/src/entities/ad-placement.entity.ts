@@ -5,7 +5,7 @@ import { BaseEntity } from "./base";
 @Entity("ad_placements")
 export class AdPlacement extends BaseEntity {
   @Column({ name: "paid_upload_id", type: "char", length: 36 })
-  paidUpload_id: string;
+  paidUploadId: string;
 
   @Column({ type: "varchar", length: 100 })
   page: string;

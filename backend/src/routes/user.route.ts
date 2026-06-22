@@ -6,13 +6,15 @@ import {
   logoutUser,
   updateUser,
   refreshToken,
+  getUserByEmail,
 } from "../controllers/user.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 
 const router = Router();
 
+router.get("/email", getUserByEmail);
 router.post("/register", createUser);
-router.get("/get/:id", authMiddleware, getUserById);
+router.get("/:id", authMiddleware, getUserById);
 router.put("/update/:id", authMiddleware, updateUser);
 
 // auth
