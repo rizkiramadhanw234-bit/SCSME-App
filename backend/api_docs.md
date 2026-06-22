@@ -215,3 +215,38 @@
 | PATCH  | `/paid-uploads-admin/approve/:id`    | [admin] |
 | PATCH  | `/paid-uploads-admin/rejected/:id`   | [admin] |
 | PATCH  | `/paid-uploads-admin/revision/:id`   | [admin] |
+
+---
+
+## Ad Placements `/ad-placements`
+
+| Method | Endpoint                        | Auth    |
+| ------ | ------------------------------- | ------- |
+| GET    | `/ad-placements/`               | [admin] |
+| GET    | `/ad-placements/:id`            | [admin] |
+| POST   | `/ad-placements/create`         | [admin] |
+| PUT    | `/ad-placements/update/:id`     | [admin] |
+| DELETE | `/ad-placements/delete/:id`     | [admin] |
+
+> `POST /ad-placements/create` — Request Body:
+> ```json
+> {
+>   "paidUpload_id": "string (required)",
+>   "page": "string — e.g. home | directory | events | resources | sponsor",
+>   "position": "string — e.g. banner_top | banner_bottom | sidebar | inline | popup",
+>   "publishedAt": "timestamp | null",
+>   "expiresAt": "timestamp | null"
+> }
+> ```
+
+> `PUT /ad-placements/update/:id` — Request Body (semua field opsional):
+> ```json
+> {
+>   "page": "string",
+>   "position": "string",
+>   "impressions": "number",
+>   "clicks": "number",
+>   "publishedAt": "timestamp | null",
+>   "expiresAt": "timestamp | null"
+> }
+> ```
