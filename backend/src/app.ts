@@ -3,6 +3,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
 import path from "path";
+import cookieParser from "cookie-parser";
 import { testDbConnection } from "./config/db";
 import adminRouter from "./routes/admin.route";
 import userRouter from "./routes/user.route";
@@ -38,6 +39,7 @@ app.use(
     credentials: true,
   }),
 );
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

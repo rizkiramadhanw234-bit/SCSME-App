@@ -247,7 +247,7 @@ export async function loginUser(req: Request, res: Response): Promise<void> {
 
 export async function logoutUser(req: Request, res: Response): Promise<void> {
   try {
-    res.clearCookie("userToken");
+    res.clearCookie("refreshToken");
     res.json({ message: "user logged out" });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
@@ -278,6 +278,7 @@ export async function refreshToken(req: Request, res: Response): Promise<void> {
     );
     res.json({ accessToken });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

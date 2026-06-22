@@ -220,7 +220,7 @@ export async function loginAdmin(req: Request, res: Response): Promise<void> {
 
 export async function logoutAdmiin(req: Request, res: Response): Promise<void> {
   try {
-    res.clearCookie("adminToken");
+    res.clearCookie("refreshToken");
     res.json({ message: "admin logged out" });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });

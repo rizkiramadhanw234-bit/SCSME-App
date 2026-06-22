@@ -8,6 +8,7 @@ import {
   deleteAdmin,
   getAdminById,
   getAdminByEmail,
+  refreshToken,
 } from "../controllers/admin.controller";
 
 import {
@@ -41,5 +42,8 @@ router.delete("/user/:id", authMiddleware, isAdmin, deleteUser);
 // auth
 router.post("/create", createAdmin);
 router.post("/login", loginAdmin);
+
+// refresh token
+router.post("/refresh-token", refreshToken);
 
 export default router;
