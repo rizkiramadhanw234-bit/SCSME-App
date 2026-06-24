@@ -98,7 +98,8 @@ export async function upgradeSubscription(
 ): Promise<void> {
   try {
     const { id } = req.params as { id: string };
-    const { userId, planId, renewalStatus } = req.body as Subscription;
+    const { userId, planId, startDate, renewalStatus } =
+      req.body as Subscription;
     const currentSubscription = await subscriptionsRepo.findOneBy({ id });
     if (!currentSubscription) {
       res.status(404).json({ message: "Subscription not found or expired" });
@@ -113,7 +114,6 @@ export async function upgradeSubscription(
       res.status(400).json({ message: "Membership plan is not active" });
       return;
     }
-    const startDate = new Date();
     const endDate = new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000);
     const upgradedSubscription = await subscriptionsRepo.save({
       ...currentSubscription,

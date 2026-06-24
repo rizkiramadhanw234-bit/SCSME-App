@@ -59,11 +59,10 @@ export async function createEvent(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const eventDateObj = new Date(eventDate);
     const newEvent = await eventsRepo.save({
       title,
       description,
-      eventDate: eventDateObj,
+      eventDate,
       location,
       price,
       capacity,
@@ -109,12 +108,11 @@ export async function updateEvent(req: Request, res: Response): Promise<void> {
       return;
     }
 
-    const eventDateObj = new Date(eventDate);
     const updatedEvent = await eventsRepo.save({
       ...eventExist,
       title,
       description,
-      eventDate: eventDateObj,
+      eventDate,
       location,
       price,
       capacity,
@@ -132,6 +130,28 @@ export async function deleteEvent(req: Request, res: Response): Promise<void> {
     const { id } = req.params as { id: string };
     await eventsRepo.delete({ id });
     res.status(200).json({ message: "Event deleted" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
+export async function updateStatus(req: Request, res: Response): Promise<void> {
+  try {
+    const { id } = req.params as { id: string };
+    const { status } = req.body as { status: string };
+    const eventExist = await eventsRepo.findOneBy({ id });
+    if (!eventExist) {
+      res.status(404).json({ message: "Event not found" });
+      return;
+    }
+
+    const updatedEvent = await eventsRepo.save({
+      ...eventExist,
+      status,
+    });
+    res
+      .status(200)
+      .json({ message: "Event status updated", data: updatedEvent });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
