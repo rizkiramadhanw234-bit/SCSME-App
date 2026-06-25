@@ -78,8 +78,9 @@ export async function createCompany(
   res: Response,
 ): Promise<void> {
   try {
-    const { userId, companyName, categoryId, description, logoUrl, website } =
+    const { userId, companyName, categoryId, description, website } =
       req.body as Company;
+    const logoUrl = req.file as Express.Multer.File;
     if (
       !userId ||
       !companyName ||
@@ -100,7 +101,7 @@ export async function createCompany(
         companyName,
         categoryId,
         description,
-        logoUrl,
+        logoUrl: `${process.env.BASE_URL}/public/logoCompany/${logoUrl.filename}`,
         website,
         verificationStatus: "pending",
       });
@@ -162,6 +163,7 @@ export async function deleteCompany(
     await companiesRepo.delete({ id });
     res.status(200).json({ message: "Company deleted" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
