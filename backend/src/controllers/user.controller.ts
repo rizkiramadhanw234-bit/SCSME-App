@@ -277,7 +277,8 @@ export async function refreshToken(req: Request, res: Response): Promise<void> {
       process.env.JWT_SECRET as string,
       { expiresIn: process.env.JWT_EXPIRES_IN as StringValue },
     );
-    res.json({ accessToken });
+    const { password: _, ...userNoPassword } = user;
+    res.json({ accessToken, data: userNoPassword });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });

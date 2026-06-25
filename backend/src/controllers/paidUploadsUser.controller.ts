@@ -49,6 +49,10 @@ export async function createPaidUpload(
       res.status(400).json({ message: "User ID and Company ID are required" });
       return;
     }
+    if (!imageUrl) {
+      res.status(400).json({ message: "Image file is required" });
+      return;
+    }
     const alreadyPaidUpload = await paidUploadsRepo.findOneBy({ userId });
     if (alreadyPaidUpload) {
       res.status(400).json({ message: "User already has a paid upload" });
@@ -145,6 +149,7 @@ export async function deletePaidUpload(req: Request, res: Response) {
     await paidUploadsRepo.delete({ id });
     res.status(200).json({ message: "Paid Upload deleted" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
