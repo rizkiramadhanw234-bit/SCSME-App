@@ -9,12 +9,12 @@ const resourcesRepo = AppDataSource.getRepository(Resource);
 const resourcePurchasesRepo = AppDataSource.getRepository(ResourcePurchases);
 const userRepo = AppDataSource.getRepository(User);
 
-export async function getResourcesUser(
+export async function getIsPaidResourcesUser(
   req: Request,
   res: Response,
 ): Promise<void> {
   try {
-    const userId = (req.user as { userId: string } | undefined)?.userId;
+    const userId = req.params.userId as string;
     const user = userId ? await userRepo.findOneBy({ id: userId }) : null;
     let accessLevel = ["public"];
 
@@ -40,7 +40,9 @@ export async function getResourcesUser(
           ...(accessResources.length > 0 ? [{ id: In(accessResources) }] : []),
         ],
       });
-      res.status(200).json({ message: "Resources fetched", data: resources });
+      res
+        .status(200)
+        .json({ message: "Paid Resources fetched", data: resources });
     }
 
     if (!user) {

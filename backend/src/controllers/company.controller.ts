@@ -149,7 +149,9 @@ export async function updateCompany(
       companyName,
       categoryId,
       description,
-      logoUrl: `${process.env.BASE_URL}/public/logoCompany/${logoUrl.filename}`,
+      ...(logoUrl && {
+        logoUrl: `${process.env.BASE_URL}/public/logoCompany/${logoUrl.filename}`,
+      }),
       website,
     });
     res.status(200).json({ message: "Company updated", data: updatedCompany });

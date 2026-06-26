@@ -1,6 +1,6 @@
 import { Router } from "express";
 import {
-  getResourcesUser,
+  getIsPaidResourcesUser,
   downloadResources,
 } from "../controllers/resourcesUser.controller";
 import { authMiddleware, noAuth } from "../middleware/auth.middleware";
@@ -8,8 +8,8 @@ import { authMiddleware, noAuth } from "../middleware/auth.middleware";
 const router = Router();
 
 // user
-router.get("/", noAuth, getResourcesUser);
-router.get("/isActive", authMiddleware, getResourcesUser);
+router.get("/public", noAuth, getIsPaidResourcesUser);
+router.get("/isPaid/:userId", authMiddleware, getIsPaidResourcesUser);
 router.get("/download/:id", authMiddleware, downloadResources);
 
 export default router;

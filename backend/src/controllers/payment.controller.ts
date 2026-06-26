@@ -78,6 +78,25 @@ export async function getPaymentById(req: Request, res: Response) {
   }
 }
 
+export async function getPaymentsByUserId(req: Request, res: Response) {
+  try {
+    const { userId } = req.params as { userId: string };
+    const getPayments = await paymentsRepo.find({
+      where: { userId },
+      relations: { user: true },
+    });
+    if (!getPayments) {
+      res.status(404).json({ message: "Payments not found" });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: "Payments by userId fetched", data: getPayments });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export async function getPayments(req: Request, res: Response) {
   try {
     const getPayments = await paymentsRepo.find();
