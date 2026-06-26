@@ -53,9 +53,11 @@ export async function createPaidUpload(
       res.status(400).json({ message: "Image file is required" });
       return;
     }
-    const alreadyPaidUpload = await paidUploadsRepo.findOneBy({ userId });
+    const alreadyPaidUpload = await paidUploadsRepo.findOneBy({ companyId });
     if (alreadyPaidUpload) {
-      res.status(400).json({ message: "User already has a paid upload" });
+      res
+        .status(400)
+        .json({ message: "this company already has a paid upload" });
       return;
     }
 

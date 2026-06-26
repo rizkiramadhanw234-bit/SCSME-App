@@ -56,6 +56,28 @@ export async function getSubscriptionById(
   }
 }
 
+export async function getSubscriptionByUserId(req: Request, res: Response) {
+  try {
+    const { userId } = req.params as { userId: string };
+    const getSubscription = await subscriptionsRepo.findOneBy({ userId });
+    if (!getSubscription) {
+      res.status(404).json({ message: "Subscription not found" });
+      return;
+    }
+    const today = new Date();
+    const isExpired = new Date(getSubscription.endDate) < today;
+    if (isExpired) {
+      res.status(400).json({ message: "Subscription is expired" });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: "Subscription fetched", data: getSubscription });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export async function createSubscription(req: Request, res: Response) {
   try {
     const { userId, planId, renewalStatus } = req.body as Subscription;

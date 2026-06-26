@@ -6,6 +6,7 @@ import {
   upgradeSubscription,
   deleteSubscription,
   verifyPaymentSubscription,
+  getSubscriptionByUserId,
 } from "../controllers/subscription.controller";
 import { authMiddleware } from "../middleware/auth.middleware";
 import { isAdmin } from "../middleware/admin.middleware";
@@ -15,6 +16,7 @@ const router = Router();
 // user
 router.get("/", getSubscriptions);
 router.get("/:id", authMiddleware, getSubscriptionById);
+router.get("/user/:userId", authMiddleware, getSubscriptionByUserId);
 router.post("/create", authMiddleware, createSubscription);
 router.put("/upgrade/:id", authMiddleware, upgradeSubscription);
 router.delete("/delete/:id", authMiddleware, deleteSubscription);

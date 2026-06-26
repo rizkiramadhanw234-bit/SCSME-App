@@ -113,3 +113,44 @@ export async function deletePayment(
     res.status(500).json({ message: "Internal server error" });
   }
 }
+
+export async function getRevenueStats(req: Request, res: Response) {
+  try {
+    const now = new Date();
+    const month = now.getMonth() + 1;
+    const year = now.getFullYear();
+
+    const result = await paymentsRepo
+      .createQueryBuilder("payment")
+      .select("SUM(payment.amount)", "totalRevenue")
+      .addSelect("COUNT(payment.id)", "totalTransactions")
+      .addSelect("payment.orderType", "orderType")
+      .where("payment.paymentStatus = :status", { status: "paid" })
+      .andWhere("MONTH(payment.createdAt) = :month", { month })
+      .andWhere("YEAR(payment.createdAt) = :year", { year })
+      .groupBy("payment.orderType")
+      .getRawMany();
+
+    const totalRevenue = result.reduce(
+      (sum, r) => sum + parseFloat(r.totalRevenue || 0),
+      0,
+    );
+    const totalTransactions = result.reduce(
+      (sum, r) => sum + parseInt(r.totalTransactions || 0),
+      0,
+    );
+
+    res.status(200).json({
+      message: "Revenue stats fetched",
+      data: {
+        month,
+        year,
+        totalRevenue,
+        totalTransactions,
+        breakdown: result,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}

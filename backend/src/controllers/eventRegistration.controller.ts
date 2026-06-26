@@ -38,6 +38,28 @@ export async function getRegistrationById(
   }
 }
 
+export async function getEventRegistrationByUserId(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const { userId } = req.params as { userId: string };
+    const getRegistration = await eventRegistrationsRepo.find({
+      where: { userId },
+      relations: { event: true },
+    });
+    if (!getRegistration) {
+      res.status(404).json({ message: "Registration not found" });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: "Registration fetched", data: getRegistration });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export async function createRegistration(
   req: Request,
   res: Response,

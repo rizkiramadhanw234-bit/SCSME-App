@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import cors from "cors";
 import dotenv from "dotenv";
 import helmet from "helmet";
@@ -22,6 +22,8 @@ import userResourcesRouter from "./routes/resourcesUser.route";
 import paidUpladsUserRouter from "./routes/paidUploadsUser.route";
 import paidUpladsAdminRouter from "./routes/paidUploadsAdmin.route";
 import adPlacementsRouter from "./routes/adPlacements.route";
+import reveneuStats from "./routes/revenue.route";
+import { DataNotFound } from "./errors/data-not-found";
 
 dotenv.config();
 testDbConnection();
@@ -66,5 +68,15 @@ app.use("/user-resources", userResourcesRouter);
 app.use("/paid-uploads", paidUpladsUserRouter);
 app.use("/paid-uploads-admin", paidUpladsAdminRouter);
 app.use("/ad-placements", adPlacementsRouter);
+app.use("/revenue", reveneuStats);
+
+// not found route
+app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
+  if (error instanceof DataNotFound) {
+    return res.status(404).json({ error: error.message });
+  }
+  console.error(error);
+  res.json({ error: "Interval Server error" });
+});
 
 export default app;

@@ -44,6 +44,22 @@ export async function getCompanyById(
   }
 }
 
+export async function getCompanyByUserId(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const { userId } = req.params as { userId: string };
+    const companies = await companiesRepo.find({
+      where: { userId },
+      relations: { category: true },
+    });
+    res.status(200).json({ message: "companies fetched", data: companies });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export async function searchCompanyByName(
   req: Request,
   res: Response,
@@ -108,6 +124,7 @@ export async function createCompany(
       res.status(201).json({ message: "Company created", data: newCompany });
     }
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
@@ -118,33 +135,26 @@ export async function updateCompany(
 ): Promise<void> {
   try {
     const { id } = req.params as { id: string };
-    const { companyName, categoryId, description, logoUrl, website } =
+    const { companyName, categoryId, description, website } =
       req.body as Company;
+    const logoUrl = req.file as Express.Multer.File;
     const company = await companiesRepo.findOneBy({ id });
     if (!company) {
       res.status(404).json({ message: "Company not found" });
       return;
     }
-    if (
-      companyName === company.companyName &&
-      categoryId === company.categoryId &&
-      description === company.description &&
-      logoUrl === company.logoUrl &&
-      website === company.website
-    ) {
-      res.status(400).json({ message: "No changes" });
-      return;
-    }
+
     const updatedCompany = await companiesRepo.save({
       ...company,
       companyName,
       categoryId,
       description,
-      logoUrl,
+      logoUrl: `${process.env.BASE_URL}/public/logoCompany/${logoUrl.filename}`,
       website,
     });
     res.status(200).json({ message: "Company updated", data: updatedCompany });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }
