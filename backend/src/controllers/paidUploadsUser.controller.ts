@@ -23,6 +23,28 @@ export async function getPaidUploadById(
   }
 }
 
+export async function getPaidUploadByUserId(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const { userId } = req.params as { userId: string };
+    const getPaidUpload = await paidUploadsRepo.find({
+      where: { userId },
+      relations: { company: true },
+    });
+    if (!getPaidUpload) {
+      res.status(404).json({ message: "Paid Upload not found" });
+      return;
+    }
+    res
+      .status(200)
+      .json({ message: "Paid Upload fetched", data: getPaidUpload });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export async function createPaidUpload(
   req: Request,
   res: Response,

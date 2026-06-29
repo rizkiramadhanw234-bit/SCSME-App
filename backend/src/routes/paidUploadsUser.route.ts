@@ -4,6 +4,7 @@ import {
   createPaidUpload,
   deletePaidUpload,
   updatePaidUploads,
+  getPaidUploadByUserId,
 } from "../controllers/paidUploadsUser.controller";
 import { paidUploadUser } from "../lib/paiUploads";
 import { authMiddleware } from "../middleware/auth.middleware";
@@ -17,6 +18,7 @@ router.post(
   authMiddleware,
   createPaidUpload,
 );
+router.get("/user/:userId", authMiddleware, getPaidUploadByUserId);
 router.get("/:id", authMiddleware, getPaidUploadById);
 router.put(
   "/update/:id",

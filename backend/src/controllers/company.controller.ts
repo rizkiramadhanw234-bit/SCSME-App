@@ -54,6 +54,10 @@ export async function getCompanyByUserId(
       where: { userId },
       relations: { category: true },
     });
+    if (!companies) {
+      res.status(404).json({ message: "Company not found" });
+      return;
+    }
     res.status(200).json({ message: "companies fetched", data: companies });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
