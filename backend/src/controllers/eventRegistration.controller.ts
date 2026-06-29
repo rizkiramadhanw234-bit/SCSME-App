@@ -93,7 +93,7 @@ export async function createRegistration(
       return;
     }
     const qrCodeUrl = await generateTicketQR(eventId);
-    const newRegistration = await eventRegistrationsRepo.save({
+    const newRegistration = eventRegistrationsRepo.create({
       eventId,
       userId,
       ticketType: ticketType ? "standard" : "vip",
@@ -102,10 +102,13 @@ export async function createRegistration(
       attendanceStatus,
       certificateUrl,
     });
+    const newEventRegistration =
+      await eventRegistrationsRepo.save(newRegistration);
     res
       .status(200)
-      .json({ message: "Registration created", data: newRegistration });
+      .json({ message: "Registration created", data: newEventRegistration });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

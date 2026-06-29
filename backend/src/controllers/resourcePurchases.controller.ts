@@ -58,14 +58,15 @@ export async function createResourcePurchases(
       res.status(400).json({ message: "Already Purchased" });
       return;
     }
-    const newResourcePurchases = await resourcePurchasesRepo.save({
+    const newResourcePurchases = resourcePurchasesRepo.create({
       resourceId,
       userId,
       paymentStatus: "pending",
     });
+    const result = await resourcePurchasesRepo.save(newResourcePurchases);
     res.status(200).json({
       message: "Resource Purchases created",
-      data: newResourcePurchases,
+      data: result,
     });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });

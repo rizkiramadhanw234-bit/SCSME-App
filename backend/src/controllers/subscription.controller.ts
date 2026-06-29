@@ -98,7 +98,7 @@ export async function createSubscription(req: Request, res: Response) {
     const startDate = new Date();
     const endDate = new Date(startDate);
     endDate.setFullYear(endDate.getFullYear() + 1);
-    const newSubscription = await subscriptionsRepo.save({
+    const newSubscription = subscriptionsRepo.create({
       userId,
       planId,
       startDate,
@@ -106,9 +106,8 @@ export async function createSubscription(req: Request, res: Response) {
       paymentStatus: "pending",
       renewalStatus,
     });
-    res
-      .status(201)
-      .json({ message: "Subscription created", data: newSubscription });
+    const result = await subscriptionsRepo.save(newSubscription);
+    res.status(201).json({ message: "Subscription created", data: result });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }
@@ -137,7 +136,7 @@ export async function upgradeSubscription(
       return;
     }
     const endDate = new Date(startDate.getTime() + 30 * 24 * 60 * 60 * 1000);
-    const upgradedSubscription = await subscriptionsRepo.save({
+    const upgradedSubscription = subscriptionsRepo.create({
       ...currentSubscription,
       userId,
       planId,
@@ -146,9 +145,8 @@ export async function upgradeSubscription(
       paymentStatus: "pending",
       renewalStatus,
     });
-    res
-      .status(200)
-      .json({ message: "Subscription updated", data: upgradedSubscription });
+    const result = await subscriptionsRepo.save(upgradedSubscription);
+    res.status(200).json({ message: "Subscription updated", data: result });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

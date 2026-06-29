@@ -1,8 +1,16 @@
-import { Entity, Column, ManyToOne, JoinColumn, OneToMany } from "typeorm";
+import {
+  Entity,
+  Column,
+  ManyToOne,
+  JoinColumn,
+  OneToMany,
+  BeforeInsert,
+} from "typeorm";
 import { User } from "./user.entity";
 import { Company } from "./company.entity";
 import { AdPlacement } from "./ad-placement.entity";
 import { BaseEntity } from "./base";
+import { generateOrderCode } from "../utils/orderCode";
 
 @Entity("paid_uploads")
 export class PaidUpload extends BaseEntity {
@@ -85,6 +93,22 @@ export class PaidUpload extends BaseEntity {
 
   @Column({ name: "alt_text", type: "varchar", length: 255, nullable: true })
   altText: string | null;
+
+  @Column({
+    name: "payment_status",
+    type: "enum",
+    enum: ["pending", "paid", "failed", "refunded"],
+    default: "pending",
+  })
+  paymentStatus: string;
+
+  @Column({ name: "order_code", type: "varchar", length: 30, unique: true })
+  orderCode: string;
+
+  @BeforeInsert()
+  generateOrderCode() {
+    this.orderCode = generateOrderCode("PU");
+  }
 
   // Relations
   @ManyToOne(() => User)

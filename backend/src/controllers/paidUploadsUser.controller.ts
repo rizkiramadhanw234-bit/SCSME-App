@@ -62,6 +62,7 @@ export async function createPaidUpload(
       seoTitle,
       metaDescription,
       altText,
+      paymentStatus,
     } = req.body as PaidUpload;
     const imageUrl = req.file as Express.Multer.File;
     const startDate = new Date();
@@ -75,15 +76,8 @@ export async function createPaidUpload(
       res.status(400).json({ message: "Image file is required" });
       return;
     }
-    const alreadyPaidUpload = await paidUploadsRepo.findOneBy({ companyId });
-    if (alreadyPaidUpload) {
-      res
-        .status(400)
-        .json({ message: "this company already has a paid upload" });
-      return;
-    }
 
-    const paidUpload = await paidUploadsRepo.save({
+    const paidUpload = paidUploadsRepo.create({
       userId,
       companyId,
       uploadType,
@@ -98,8 +92,10 @@ export async function createPaidUpload(
       seoTitle,
       metaDescription,
       altText,
+      paymentStatus,
     });
-    res.status(201).json({ message: "Paid Upload created", data: paidUpload });
+    const result = await paidUploadsRepo.save(paidUpload);
+    res.status(201).json({ message: "Paid Upload created", data: result });
   } catch (error) {
     console.log(error);
     res.status(500).json({ message: "Internal server error" });
@@ -133,23 +129,16 @@ export async function updatePaidUploads(
       res.status(404).json({ message: "Paid Upload not found" });
       return;
     }
-    if (
-      companyId === paidUploadExist.companyId &&
-      uploadType === paidUploadExist.uploadType &&
-      title === paidUploadExist.title &&
-      description === paidUploadExist.description &&
-      targetUrl === paidUploadExist.targetUrl &&
-      placement === paidUploadExist.placement
-    ) {
-      res.status(400).json({ message: "no changes" });
-    }
+
     const updatedPaidUpload = await paidUploadsRepo.save({
       ...paidUploadExist,
       companyId,
       uploadType,
       title,
       description,
-      imageUrl: `${process.env.BASE_URL}/public/paidUploads/${imageUrl.filename}`,
+      ...(imageUrl && {
+        imageUrl: `${process.env.BASE_URL}/public/paidUploads/${imageUrl.filename}`,
+      }),
       targetUrl,
       placement,
       price,
@@ -163,6 +152,7 @@ export async function updatePaidUploads(
       .status(200)
       .json({ message: "Paid Upload updated", data: updatedPaidUpload });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

@@ -1,7 +1,8 @@
-import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn, BeforeInsert } from "typeorm";
 import { User } from "./user.entity";
 import { MembershipPlan } from "./membership-plan.entity";
 import { BaseEntity } from "./base";
+import { generateOrderCode } from "../utils/orderCode";
 
 @Entity("subscriptions")
 export class Subscription extends BaseEntity {
@@ -32,6 +33,14 @@ export class Subscription extends BaseEntity {
     default: "active",
   })
   renewalStatus: string;
+
+  @Column({ name: "order_code", type: "varchar", length: 30, unique: true })
+  orderCode: string;
+
+  @BeforeInsert()
+  generateOrderCode() {
+    this.orderCode = generateOrderCode("SUB");
+  }
 
   // Relations
   @ManyToOne(() => User)

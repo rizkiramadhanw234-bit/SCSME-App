@@ -44,7 +44,7 @@ export async function createPayment(
       return;
     }
 
-    const newPayment = await paymentsRepo.save({
+    const newPayment = paymentsRepo.create({
       userId,
       orderId,
       orderType,
@@ -58,7 +58,8 @@ export async function createPayment(
       res.status(404).json({ message: "Failed to create payment" });
       return;
     }
-    res.status(201).json({ message: "Payment created", data: newPayment });
+    const result = await paymentsRepo.save(newPayment);
+    res.status(201).json({ message: "Payment created", data: result });
   } catch (error) {
     res.status(500).json({ message: "Internal server error" });
   }

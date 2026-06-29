@@ -1,7 +1,8 @@
-import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn, BeforeInsert } from "typeorm";
 import { Event } from "./event.entity";
 import { User } from "./user.entity";
 import { BaseEntity } from "./base";
+import { generateOrderCode } from "../utils/orderCode";
 
 @Entity("event_registrations")
 export class EventRegistration extends BaseEntity {
@@ -45,6 +46,14 @@ export class EventRegistration extends BaseEntity {
     nullable: true,
   })
   certificateUrl: string | null;
+
+  @Column({ name: "order_code", type: "varchar", length: 30, unique: true })
+  orderCode: string;
+
+  @BeforeInsert()
+  generateOrderCode() {
+    this.orderCode = generateOrderCode("ER");
+  }
 
   // Relations
   @ManyToOne(() => Event)

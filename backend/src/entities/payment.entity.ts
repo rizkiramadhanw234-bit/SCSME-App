@@ -1,6 +1,7 @@
-import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn, BeforeInsert } from "typeorm";
 import { User } from "./user.entity";
 import { BaseEntity } from "./base";
+import { generateOrderCode } from "../utils/orderCode";
 
 @Entity("payments")
 export class Payment extends BaseEntity {
@@ -33,6 +34,14 @@ export class Payment extends BaseEntity {
 
   @Column({ name: "proof_url", type: "varchar", length: 500, nullable: true })
   proofUrl: string | null;
+
+  @Column({ name: "payment_code", type: "varchar", length: 30, unique: true })
+  paymentCode: string;
+
+  @BeforeInsert()
+  generateOrderCode() {
+    this.paymentCode = generateOrderCode("PAY");
+  }
 
   // Relations
   @ManyToOne(() => User)

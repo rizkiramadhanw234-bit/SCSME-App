@@ -1,7 +1,8 @@
-import { Entity, Column, ManyToOne, JoinColumn } from "typeorm";
+import { Entity, Column, ManyToOne, JoinColumn, BeforeInsert } from "typeorm";
 import { Resource } from "./resource.entity";
 import { User } from "./user.entity";
 import { BaseEntity } from "./base";
+import { generateOrderCode } from "../utils/orderCode";
 
 @Entity("resource_purchases")
 export class ResourcePurchases extends BaseEntity {
@@ -18,6 +19,14 @@ export class ResourcePurchases extends BaseEntity {
     default: "pending",
   })
   paymentStatus: string;
+
+  @Column({ name: "order_code", type: "varchar", length: 30, unique: true })
+  orderCode: string;
+
+  @BeforeInsert()
+  generateOrderCode() {
+    this.orderCode = generateOrderCode("RP");
+  }
 
   // Relations
   @ManyToOne(() => Resource)
