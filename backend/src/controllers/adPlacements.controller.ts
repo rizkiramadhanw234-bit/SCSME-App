@@ -43,7 +43,7 @@ export async function createAdPlacement(
 ): Promise<void> {
   try {
     const {
-      paidUploadId,
+      orderCode,
       page,
       position,
       impressions,
@@ -52,18 +52,18 @@ export async function createAdPlacement(
       expiresAt,
     } = req.body as AdPlacement;
     const adPlacementExist = await adPlacementsRepo.findOneBy({
-      paidUploadId,
+      orderCode,
     });
     if (adPlacementExist) {
       res.status(400).json({ message: "Ad Placement already exists" });
       return;
     }
-    if (!paidUploadId) {
+    if (!orderCode) {
       res.status(400).json({ message: "Paid Upload ID is required" });
       return;
     }
     const newAdPlacement = await adPlacementsRepo.save({
-      paidUploadId,
+      orderCode,
       page,
       position,
       impressions,
@@ -87,7 +87,7 @@ export async function updateAdPlacement(
   try {
     const { id } = req.params as { id: string };
     const {
-      paidUploadId,
+      orderCode,
       page,
       position,
       impressions,
@@ -102,7 +102,7 @@ export async function updateAdPlacement(
     }
     const updatedAdPlacements = await adPlacementsRepo.save({
       ...currentAdPlacements,
-      paidUploadId,
+      orderCode,
       page,
       position,
       impressions,

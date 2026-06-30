@@ -90,6 +90,7 @@ export interface Subscription extends BaseEntity {
   endDate: Date;
   paymentStatus: PaymentStatus;
   renewalStatus: RenewalStatus;
+  orderCode: string;
 }
 
 export interface Event extends BaseEntity {
@@ -112,6 +113,7 @@ export interface EventRegistration extends BaseEntity {
   qrCode: string | null;
   attendanceStatus: AttendanceStatus;
   certificateUrl: string | null;
+  orderCode: string;
 }
 
 export interface Resource extends BaseEntity {
@@ -125,12 +127,11 @@ export interface Resource extends BaseEntity {
   metaDescription: string | null;
 }
 
-export interface ResourcePurchase {
-  id: string;
+export interface ResourcePurchase extends BaseEntity {
   resourceId: string;
   userId: string;
   paymentStatus: PaymentStatus;
-  createdAt: Date;
+  orderCode: string;
 }
 
 export interface PaidUpload extends BaseEntity {
@@ -150,6 +151,8 @@ export interface PaidUpload extends BaseEntity {
   seoTitle: string | null;
   metaDescription: string | null;
   altText: string | null;
+  paymentStatus: PaymentStatus;
+  orderCode: string;
 }
 
 export interface AdPlacement {
@@ -163,8 +166,7 @@ export interface AdPlacement {
   expiresAt: Date | null;
 }
 
-export interface Payment {
-  id: string;
+export interface Payment extends BaseEntity {
   userId: string;
   orderType: OrderType;
   orderId: string;
@@ -172,7 +174,7 @@ export interface Payment {
   paymentStatus: PaymentStatus;
   invoiceUrl: string | null;
   proofUrl: string | null;
-  createdAt: Date;
+  paymentCode: string;
 }
 
 export interface AdminLog {

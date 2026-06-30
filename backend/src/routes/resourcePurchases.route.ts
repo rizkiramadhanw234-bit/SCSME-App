@@ -12,7 +12,7 @@ import { isAdmin } from "../middleware/admin.middleware";
 const router = Router();
 
 // user
-router.post("/create/:id", authMiddleware, createResourcePurchases);
+router.post("/create/", authMiddleware, createResourcePurchases);
 router.delete("/delete/:id", authMiddleware, deleteResourcePurchases);
 
 // admin

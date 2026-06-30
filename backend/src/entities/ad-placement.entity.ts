@@ -4,8 +4,13 @@ import { BaseEntity } from "./base";
 
 @Entity("ad_placements")
 export class AdPlacement extends BaseEntity {
-  @Column({ name: "paid_upload_id", type: "char", length: 36 })
-  paidUploadId: string;
+  @Column({
+    name: "paid_upload_order_code",
+    type: "char",
+    length: 30,
+    unique: true,
+  })
+  orderCode: string;
 
   @Column({ type: "varchar", length: 100 })
   page: string;
@@ -27,6 +32,9 @@ export class AdPlacement extends BaseEntity {
 
   // Relations
   @ManyToOne(() => PaidUpload)
-  @JoinColumn({ name: "paid_upload_id" })
+  @JoinColumn({
+    name: "paid_upload_order_code",
+    referencedColumnName: "orderCode",
+  })
   paidUpload: PaidUpload;
 }

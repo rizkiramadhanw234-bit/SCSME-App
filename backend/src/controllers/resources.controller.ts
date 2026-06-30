@@ -40,6 +40,20 @@ export async function getResourcesByType(
   }
 }
 
+export async function getResourcesByPaidLevel(
+  req: Request,
+  res: Response,
+): Promise<void> {
+  try {
+    const getResources = await resourcesRepo.find({
+      where: { accessLevel: "paid" },
+    });
+    res.status(200).json({ message: "Resources fetched", data: getResources });
+  } catch (error) {
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export async function createResource(
   req: Request,
   res: Response,

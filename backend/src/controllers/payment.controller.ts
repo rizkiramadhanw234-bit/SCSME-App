@@ -20,14 +20,18 @@ export async function createPayment(
     const { userId, orderId, orderType, amount } = req.body as Payment;
     const proofUrl = req.file as Express.Multer.File;
 
-    const pendingSubscription = await subscriptionsRepo.findOneBy({ userId });
-    const pendingEventRegistration = await eventRegistrationsRepo.findOneBy({
-      userId,
+    const pendingSubscription = await subscriptionsRepo.find({
+      where: { userId, paymentStatus: "pending" },
     });
-    const pendingResourcePurchases = await resourcePurchasesRepo.findOneBy({
-      userId,
+    const pendingEventRegistration = await eventRegistrationsRepo.find({
+      where: { userId, paymentStatus: "pending" },
     });
-    const pendingPaidUpload = await paidUploadsRepo.findOneBy({ userId });
+    const pendingResourcePurchases = await resourcePurchasesRepo.find({
+      where: { userId, paymentStatus: "pending" },
+    });
+    const pendingPaidUpload = await paidUploadsRepo.find({
+      where: { userId, paymentStatus: "pending" },
+    });
     if (
       !pendingSubscription &&
       !pendingEventRegistration &&

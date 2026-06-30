@@ -17,7 +17,7 @@ const router = Router();
 // admin
 router.get("/", getResources);
 router.get("/type/:type", authMiddleware, isAdmin, getResourcesByType);
-router.get("/:id", authMiddleware, isAdmin, getResourceById);
+router.get("/:id", authMiddleware, getResourceById);
 router.get("/download/:id", authMiddleware, isAdmin, downloadResources);
 router.post(
   "/create",

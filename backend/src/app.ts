@@ -23,6 +23,7 @@ import paidUpladsUserRouter from "./routes/paidUploadsUser.route";
 import paidUpladsAdminRouter from "./routes/paidUploadsAdmin.route";
 import adPlacementsRouter from "./routes/adPlacements.route";
 import reveneuStats from "./routes/revenue.route";
+import pendingOrders from "./routes/pendingOrders.route";
 import { DataNotFound } from "./errors/data-not-found";
 
 dotenv.config();
@@ -69,6 +70,7 @@ app.use("/paid-uploads", paidUpladsUserRouter);
 app.use("/paid-uploads-admin", paidUpladsAdminRouter);
 app.use("/ad-placements", adPlacementsRouter);
 app.use("/revenue", reveneuStats);
+app.use("/pending-orders", pendingOrders);
 
 // not found route
 app.use((error: unknown, req: Request, res: Response, next: NextFunction) => {
