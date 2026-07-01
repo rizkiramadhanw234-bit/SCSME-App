@@ -1,48 +1,24 @@
 import { Request, Response } from "express";
 import { Payment } from "../entities/payment.entity";
-import { Subscription } from "../entities/subscription.entity";
-import { EventRegistration } from "../entities/event-registration.entity";
-import { ResourcePurchases } from "../entities/resource-purchases.entity";
-import { PaidUpload } from "../entities/paid-upload.entity";
+
 import { AppDataSource } from "../config/db";
 
 const paymentsRepo = AppDataSource.getRepository(Payment);
-const subscriptionsRepo = AppDataSource.getRepository(Subscription);
-const eventRegistrationsRepo = AppDataSource.getRepository(EventRegistration);
-const resourcePurchasesRepo = AppDataSource.getRepository(ResourcePurchases);
-const paidUploadsRepo = AppDataSource.getRepository(PaidUpload);
 
 export async function createPayment(
   req: Request,
   res: Response,
 ): Promise<void> {
   try {
-    const { userId, orderId, orderType, amount } = req.body as Payment;
+    const { userId, orderCode, orderType, amount } = req.body as Payment;
     const proofUrl = req.file as Express.Multer.File;
 
-    const pendingSubscription = await subscriptionsRepo.find({
-      where: { userId, paymentStatus: "pending" },
-    });
-    const pendingEventRegistration = await eventRegistrationsRepo.find({
-      where: { userId, paymentStatus: "pending" },
-    });
-    const pendingResourcePurchases = await resourcePurchasesRepo.find({
-      where: { userId, paymentStatus: "pending" },
-    });
-    const pendingPaidUpload = await paidUploadsRepo.find({
-      where: { userId, paymentStatus: "pending" },
-    });
-    if (
-      !pendingSubscription &&
-      !pendingEventRegistration &&
-      !pendingResourcePurchases &&
-      !pendingPaidUpload
-    ) {
-      res.status(404).json({ message: "order not found" });
+    if (!userId || !orderCode || !orderType || !amount || !proofUrl) {
+      res.status(400).json({ message: "Missing required fields" });
       return;
     }
 
-    const alreadyPaid = await paymentsRepo.findOneBy({ orderId, userId });
+    const alreadyPaid = await paymentsRepo.findOneBy({ orderCode, userId });
     if (alreadyPaid) {
       res.status(400).json({ message: "Already paid" });
       return;
@@ -50,7 +26,7 @@ export async function createPayment(
 
     const newPayment = paymentsRepo.create({
       userId,
-      orderId,
+      orderCode,
       orderType,
       amount,
       paymentStatus: "pending",
@@ -65,6 +41,7 @@ export async function createPayment(
     const result = await paymentsRepo.save(newPayment);
     res.status(201).json({ message: "Payment created", data: result });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

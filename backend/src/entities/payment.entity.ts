@@ -3,6 +3,14 @@ import { User } from "./user.entity";
 import { BaseEntity } from "./base";
 import { generateOrderCode } from "../utils/orderCode";
 
+export enum PaymentStatus {
+  PENDING = "pending",
+  PAID = "paid",
+  FAILED = "failed",
+  REFUNDED = "refunded",
+}
+export type PaymentStatusType = `${PaymentStatus}`;
+
 @Entity("payments")
 export class Payment extends BaseEntity {
   @Column({ name: "user_id", type: "char", length: 36 })
@@ -15,8 +23,8 @@ export class Payment extends BaseEntity {
   })
   orderType: string;
 
-  @Column({ name: "order_id", type: "char", length: 36 })
-  orderId: string;
+  @Column({ name: "order_code", type: "char", length: 36 })
+  orderCode: string;
 
   @Column({ type: "decimal", precision: 10, scale: 2 })
   amount: number;
@@ -24,8 +32,8 @@ export class Payment extends BaseEntity {
   @Column({
     name: "payment_status",
     type: "enum",
-    enum: ["pending", "paid", "failed", "refunded"],
-    default: "pending",
+    enum: PaymentStatus,
+    default: PaymentStatus.PENDING,
   })
   paymentStatus: string;
 

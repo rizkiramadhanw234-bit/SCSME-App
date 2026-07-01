@@ -9,7 +9,7 @@
     "emitDecoratorMetadata": true,
     "strictPropertyInitialization": false,
 
-    "strict": true,
+    "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
     "sourceMap": true,

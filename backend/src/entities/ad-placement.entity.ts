@@ -31,10 +31,14 @@ export class AdPlacement extends BaseEntity {
   expiresAt: Date | null;
 
   // Relations
-  @ManyToOne(() => PaidUpload)
+  @ManyToOne(() => PaidUpload, {
+    onUpdate: "CASCADE",
+    onDelete: "CASCADE",
+  })
   @JoinColumn({
     name: "paid_upload_order_code",
     referencedColumnName: "orderCode",
+    foreignKeyConstraintName: "paid_upload_order_code_fk",
   })
   paidUpload: PaidUpload;
 }

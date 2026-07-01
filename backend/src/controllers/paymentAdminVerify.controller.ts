@@ -1,8 +1,16 @@
 import { Request, Response } from "express";
-import { Payment } from "../entities/payment.entity";
+import { Payment, PaymentStatusType } from "../entities/payment.entity";
 import { AppDataSource } from "../config/db";
+import { EventRegistration } from "../entities/event-registration.entity";
+import { PaidUpload } from "../entities/paid-upload.entity";
+import { ResourcePurchases } from "../entities/resource-purchases.entity";
+import { Subscription } from "../entities/subscription.entity";
 
 const paymentsRepo = AppDataSource.getRepository(Payment);
+const eventRegistrationsRepo = AppDataSource.getRepository(EventRegistration);
+const subscriptionsRepo = AppDataSource.getRepository(Subscription);
+const resourcePurchasesRepo = AppDataSource.getRepository(ResourcePurchases);
+const paidUploadsRepo = AppDataSource.getRepository(PaidUpload);
 
 export async function getPayments(req: Request, res: Response): Promise<void> {
   try {
@@ -61,37 +69,37 @@ export async function updatePaymentStatus(
 ): Promise<void> {
   try {
     const { id } = req.params as { id: string };
-    const { paymentStatus } = req.body as Payment;
+    const { paymentStatus } = req.body as {
+      paymentStatus: PaymentStatusType;
+    };
     const payment = await paymentsRepo.findOneBy({ id });
     if (!payment) {
       res.status(404).json({ message: "Payment not found" });
       return;
     }
 
-    const paidStatus = paymentStatus === "paid";
-    const failedStatus = paymentStatus === "failed";
-    const refundedStatus = paymentStatus === "refunded";
+    const repoMap = {
+      event: eventRegistrationsRepo,
+      membership: subscriptionsRepo,
+      resource: resourcePurchasesRepo,
+      paid_upload: paidUploadsRepo,
+    } as const;
 
-    const updatedPayment = await paymentsRepo.save({
-      ...payment,
-      paymentStatus: paidStatus
-        ? "paid"
-        : failedStatus
-          ? "failed"
-          : refundedStatus
-            ? "refunded"
-            : "pending",
+    const repo = repoMap[payment.orderType as keyof typeof repoMap];
+    const order = await repo.findOne({
+      where: { orderCode: payment.orderCode },
     });
-
-    if (!updatedPayment) {
-      res.status(404).json({ message: "Failed to update payment status" });
+    if (!order) {
+      res.status(404).json({ message: "Order not found" });
       return;
     }
 
-    res
-      .status(200)
-      .json({ message: "Payment status updated", data: updatedPayment });
+    await paymentsRepo.update({ id }, { paymentStatus });
+    await repo.update({ id: order.id }, { paymentStatus });
+
+    res.status(200).json({ message: "Payment status updated" });
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Internal server error" });
   }
 }

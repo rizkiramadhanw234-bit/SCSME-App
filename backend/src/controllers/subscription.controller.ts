@@ -59,7 +59,7 @@ export async function getSubscriptionById(
 export async function getSubscriptionByUserId(req: Request, res: Response) {
   try {
     const { userId } = req.params as { userId: string };
-    const getSubscription = await subscriptionsRepo.find({
+    const getSubscription = await subscriptionsRepo.findOne({
       where: { userId },
       relations: { plan: true },
     });
@@ -68,9 +68,7 @@ export async function getSubscriptionByUserId(req: Request, res: Response) {
       return;
     }
     const today = new Date();
-    const isExpired = getSubscription.some(
-      (sub: Subscription) => new Date(sub.endDate) < today,
-    );
+    const isExpired = new Date(getSubscription.endDate) < today;
     if (isExpired) {
       res.status(400).json({ message: "Subscription is expired" });
       return;
