@@ -124,7 +124,7 @@ export default function PaidUploads() {
                   </div>
                   <div className="flex items-center justify-start gap-2">
                     <PaidUploadsModal data={item} />
-                    <DeletePaidUploads data={item} />
+                    <DeletePaidUploads id={item.id} />
                   </div>
                 </Card>
               ))}

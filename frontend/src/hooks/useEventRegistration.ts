@@ -8,6 +8,7 @@ import {
   getEventRegistrationByUserId,
 } from "@/services/eventRegistration.service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { pendingOrdersKey } from "./usePendingOrders";
 
 const eventRegistrationKey = {
   eventRegistration: ["eventRegistration"] as const,
@@ -29,7 +30,7 @@ export const useGetEventRegistrations = () => {
   });
 };
 
-export const useGetRegistrationById = (id: string) => {
+export const useGetEventRegistrationById = (id: string) => {
   return useQuery({
     queryKey: eventRegistrationKey.detail(id),
     queryFn: async () => {
@@ -68,7 +69,9 @@ export const useCreateEventRegistration = () => {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: eventRegistrationKey.lists() });
+      queryClient.invalidateQueries({
+        queryKey: eventRegistrationKey.lists(),
+      });
     },
     onError: (error) => console.error(error),
   });
@@ -86,6 +89,9 @@ export const useDeleteEventRegistration = (id: string) => {
         queryKey: eventRegistrationKey.detail(id),
       });
       queryClient.invalidateQueries({ queryKey: eventRegistrationKey.lists() });
+      queryClient.invalidateQueries({
+        queryKey: pendingOrdersKey.eventLists(),
+      });
     },
     onError: (error) => console.error(error),
   });

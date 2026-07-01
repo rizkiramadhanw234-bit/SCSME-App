@@ -34,6 +34,7 @@ export default function RecentPayments() {
             <TableHeader className="bg-blue-50">
               <TableRow>
                 <TableHead>Invoice</TableHead>
+                <TableHead>Order Code</TableHead>
                 <TableHead>Order Type</TableHead>
                 <TableHead>Amount</TableHead>
                 <TableHead>Proof</TableHead>
@@ -58,6 +59,7 @@ export default function RecentPayments() {
                   className="cursor-pointer "
                 >
                   <TableCell>{payment.paymentCode}</TableCell>
+                  <TableCell>{payment.orderCode}</TableCell>
                   <TableCell>{payment.orderType ?? "N/A"}</TableCell>
                   <TableCell>{formatPrice(payment.amount) ?? "N/A"}</TableCell>
                   {payment.proofUrl?.length === 0 ? (

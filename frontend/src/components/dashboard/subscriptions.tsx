@@ -15,6 +15,7 @@ import { FaCircleCheck } from "react-icons/fa6";
 import { FaCalendarAlt } from "react-icons/fa";
 import { BsFillPeopleFill } from "react-icons/bs";
 import { HiBadgeCheck } from "react-icons/hi";
+import SubsModal from "../modals/subscriptionModal";
 
 export default function Subscriptions() {
   const router = useRouter();
@@ -153,14 +154,7 @@ export default function Subscriptions() {
                       {plan.benefits}
                     </p>
                   </div>
-                  <Button
-                    className="w-full h-9  bg-blue-900 hover:bg-blue-950 cursor-pointer"
-                    onClick={() =>
-                      router.push(`/dashboard/subscriptions/${plan.id}`)
-                    }
-                  >
-                    Subscribe
-                  </Button>
+                  <SubsModal planId={plan.id} />
                 </Card>
               ))}
             </div>

@@ -10,3 +10,17 @@ export const createResourcePurchase = async (
   );
   return res.data.data;
 };
+
+export const getResourcePurchaseById = async (id: string) => {
+  const res = await axiosApi.get<{ data: ResourcePurchase }>(
+    `/resource-purchases/${id}`,
+  );
+  return res.data.data;
+};
+
+export const deleteResourcePurchases = async (id: string) => {
+  const res = await axiosApi.delete<{ data: ResourcePurchase }>(
+    `/resource-purchases/delete/${id}`,
+  );
+  return res.data.data;
+};

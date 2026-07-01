@@ -38,19 +38,18 @@ export default function ResourcePurchasesModal({
   const [resourcePurchases, setResourcePurchases] =
     useState<CreateResourcePurchaseRequest>({
       userId: user?.id || "",
-      resourceId: getResourceId?.id || "",
+      resourceId: resourceId,
     });
 
   useEffect(() => {
-    if (getResourceId) {
+    if (user) {
       // eslint-disable-next-line react-hooks/set-state-in-effect
-      setResourcePurchases((prev) => ({
-        ...prev,
+      setResourcePurchases({
         userId: user?.id || "",
-        resourceId: getResourceId.id,
-      }));
+        resourceId: resourceId,
+      });
     }
-  }, [getResourceId, user?.id]);
+  }, [user, resourceId]);
 
   const handleSubmit = async () => {
     try {

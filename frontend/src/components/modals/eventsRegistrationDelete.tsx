@@ -12,25 +12,19 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "../ui/button";
 import { useDeleteEventRegistration } from "@/hooks/useEventRegistration";
-import { EventRegistration } from "@/types";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 type DeleteProps = {
-  data?: EventRegistration | null;
+  id: string;
 };
-
-export default function EventsRegistrationDelete({ data }: DeleteProps) {
-  const router = useRouter();
+export default function EventsRegistrationDelete({ id }: DeleteProps) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const { mutateAsync: deleteEventRegistration, isPending } =
-    useDeleteEventRegistration(data?.id as string);
+    useDeleteEventRegistration(id as string);
 
   const handleDelete = async () => {
-    if (data?.id) {
-      await deleteEventRegistration();
-      router.refresh();
-    }
+    await deleteEventRegistration();
+
     setIsOpen(false);
   };
   return (

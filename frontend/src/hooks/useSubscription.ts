@@ -10,6 +10,7 @@ import {
   getSubscriptionByUserId,
 } from "@/services/subscription.service";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { pendingOrdersKey } from "./usePendingOrders";
 
 const subscriptionKey = {
   subscriptions: ["subscriptions"] as const,
@@ -75,6 +76,9 @@ export const useDeleteSubscription = (id: string) => {
     mutationFn: async () => await deleteSubscription(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: subscriptionKey.lists() });
+      queryClient.invalidateQueries({
+        queryKey: pendingOrdersKey.subsLists(),
+      });
     },
     onError: (error) => console.error(error),
   });

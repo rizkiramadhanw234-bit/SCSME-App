@@ -7,13 +7,14 @@ import {
   getPaidUploadByUserId,
 } from "@/services/paidUpload.service";
 import { CreatePaidUploadFormData, UpdatePaidUploadFormData } from "@/types";
+import { pendingOrdersKey } from "./usePendingOrders";
 
 const paidUploadKeys = {
-  data: ["paidUpload"] as const,
-  detail: (id: string) => [...paidUploadKeys.data, "detail", id] as const,
-  lists: () => [...paidUploadKeys.data, "lists"] as const,
+  paidUpload: ["paidUpload"] as const,
+  lists: () => [...paidUploadKeys.paidUpload, "lists"] as const,
+  detail: (id: string) => [...paidUploadKeys.paidUpload, "detail", id] as const,
   userId: (userId: string) =>
-    [...paidUploadKeys.data, "userId", userId] as const,
+    [...paidUploadKeys.paidUpload, "userId", userId] as const,
 };
 
 export const useCreatePaidUpload = () => {
@@ -24,7 +25,7 @@ export const useCreatePaidUpload = () => {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: paidUploadKeys.data });
+      queryClient.invalidateQueries({ queryKey: paidUploadKeys.paidUpload });
     },
     onError: (error) => console.error(error),
   });
@@ -38,7 +39,7 @@ export const useUpdatePaidUpload = (id: string) => {
       return res;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: paidUploadKeys.data });
+      queryClient.invalidateQueries({ queryKey: paidUploadKeys.paidUpload });
     },
     onError: (error) => console.error(error),
   });
@@ -71,7 +72,10 @@ export const useDeletePaidUploads = (id: string) => {
   return useMutation({
     mutationFn: async () => await deletePaidUpload(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: paidUploadKeys.data });
+      queryClient.invalidateQueries({ queryKey: paidUploadKeys.paidUpload });
+      queryClient.invalidateQueries({
+        queryKey: pendingOrdersKey.uploadLists(),
+      });
     },
     onError: (error) => console.error(error),
   });

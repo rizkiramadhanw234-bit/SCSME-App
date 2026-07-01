@@ -10,32 +10,29 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import {
-  useGetPaidUploadById,
-  useDeletePaidUploads,
-} from "@/hooks/usePaidUpload";
-import { PaidUpload } from "@/types";
+import { useDeletePaidUploads } from "@/hooks/usePaidUpload";
+import { useState } from "react";
 
 type DeletePaidUploadsProps = {
-  data: PaidUpload | null;
+  id: string;
 };
 
-export default function DeletePaidUploads({ data }: DeletePaidUploadsProps) {
-  const { data: paidUploads } = useGetPaidUploadById(data?.id as string);
-  const { mutateAsync: deletePaidUploads, isPending } = useDeletePaidUploads(
-    paidUploads?.id as string,
-  );
+export default function DeletePaidUploads({ id }: DeletePaidUploadsProps) {
+  const [isOpen, setIsOpen] = useState<boolean>(false);
+  const { mutateAsync: deletePaidUploads, isPending } =
+    useDeletePaidUploads(id);
 
   const handleDelete = async () => {
     try {
       await deletePaidUploads();
+      setIsOpen(false);
     } catch (error) {
       console.error(error);
     }
   };
   return (
     <div>
-      <AlertDialog>
+      <AlertDialog open={isOpen} onOpenChange={setIsOpen}>
         <AlertDialogTrigger>
           <div className="px-2 py-1 rounded-lg bg-red-600 hover:bg-red-500 text-white hover:text-white">
             Delete

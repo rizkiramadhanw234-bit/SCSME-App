@@ -20,14 +20,14 @@ import { formatPrice } from "@/utils/formatPrice";
 
 export default function EventRegistration() {
   const { user } = useAuthStore();
-  const { data: userRegistration } =
+  const { data: userEventRegistration } =
     useGetEventRegistrationByUserId(user?.id ?? "") ?? null;
 
   const { data: events, isLoading: isLoadingEvents } = useGetEvents();
   const eventsResult = events ?? [];
 
   const otherEvents = eventsResult.filter(
-    (event) => !userRegistration?.find((e) => e.eventId === event.id),
+    (event) => !userEventRegistration?.find((e) => e.eventId === event.id),
   );
 
   return (
@@ -42,7 +42,7 @@ export default function EventRegistration() {
       {/* Current event registered */}
       <div>
         <h2 className="font-bold">Events Joined</h2>
-        {userRegistration?.length === 0 ? (
+        {userEventRegistration?.length === 0 ? (
           <div className="pt-2">
             <Card className="p-4 h-38 flex items-center justify-center">
               <p className="text-sm text-gray-500">No events joined</p>
@@ -50,7 +50,7 @@ export default function EventRegistration() {
           </div>
         ) : (
           <div className="pt-2 grid grid-cols-1 md:grid-cols-2 gap-4">
-            {userRegistration?.map((item) => (
+            {userEventRegistration?.map((item) => (
               <Card key={item.id} className="p-4 h-full">
                 <div className="flex-row md:flex items-center justify-between">
                   <div className="flex flex-col gap-3">
@@ -82,7 +82,7 @@ export default function EventRegistration() {
                     />
                   </div>
                 </div>
-                <EventsRegistrationDelete data={item} />
+                <EventsRegistrationDelete id={item.id} />
               </Card>
             ))}
           </div>

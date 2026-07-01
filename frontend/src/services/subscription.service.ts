@@ -7,7 +7,7 @@ import type {
 
 export const createSubscription = async (data: CreateSubscriptionRequest) => {
   const response = await axiosApi.post<{ data: Subscription }>(
-    "/subscription/",
+    "/subscription/create",
     data,
   );
   return response.data;
@@ -26,7 +26,7 @@ export const upgradeSubscription = async (
 
 export const deleteSubscription = async (id: string) => {
   const response = await axiosApi.delete<{ data: Subscription }>(
-    `/subscription/${id}`,
+    `/subscription/delete/${id}`,
   );
   return response.data;
 };
