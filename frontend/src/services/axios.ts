@@ -1,3 +1,4 @@
+import { useAuthStore } from "@/stores/auth.store";
 import axios from "axios";
 
 export const axiosApi = axios.create({
@@ -9,10 +10,8 @@ export const axiosApi = axios.create({
   },
 });
 
-const getAccessToken = () => localStorage.getItem("userToken");
-
 axiosApi.interceptors.request.use((config) => {
-  const token = getAccessToken();
+  const token = useAuthStore.getState().accessToken;
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -35,6 +34,7 @@ axiosApi.interceptors.response.use(
       try {
         const response = await axiosApi.post("/user/refresh-token");
         const { accessToken } = response.data;
+        useAuthStore.getState().setUser(response.data);
         originalRequest.headers.Authorization = `Bearer ${accessToken}`;
         return axiosApi(originalRequest);
       } catch {

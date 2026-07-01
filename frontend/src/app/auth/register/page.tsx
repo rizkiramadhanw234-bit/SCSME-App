@@ -1,9 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRegister } from "@/hooks/useAuth";
-import type { RegisterRequest, UserRole } from "@/types";
+import type { AuthResponse, RegisterRequest, UserRole } from "@/types";
 import {
   Card,
   CardContent,
@@ -19,6 +19,9 @@ import {
   NativeSelectOption,
 } from "@/components/ui/native-select";
 import Link from "next/link";
+import { SpinnerCustom } from "@/components/ui/spinner";
+import { axiosApi } from "@/services/axios";
+import { useAuthStore } from "@/stores/auth.store";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -39,6 +42,33 @@ export default function RegisterPage() {
   });
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [showPassword, setShowPassword] = useState(false);
+
+  const { setUser, accessToken, isHydrated } = useAuthStore();
+
+  useEffect(() => {
+    axiosApi
+      .post("/user/refresh-token")
+      .then((res) => {
+        const data = res.data as AuthResponse;
+        if (accessToken) {
+          router.push("/home");
+          return;
+        }
+        setUser(data);
+      })
+      .catch(() => {
+        setUser(null);
+        router.replace("/auth/login");
+      });
+  }, [setUser, router, accessToken]);
+
+  if (!isHydrated)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <SpinnerCustom />
+      </div>
+    );
+  if (accessToken) return null;
 
   const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

@@ -3,6 +3,7 @@
 import { axiosApi } from "@/services/axios";
 import { useAuthStore } from "@/stores/auth.store";
 import { useEffect } from "react";
+import type { AuthResponse } from "@/types";
 
 export default function AuthProvider({
   children,
@@ -16,7 +17,8 @@ export default function AuthProvider({
       axiosApi
         .post("/user/refresh-token")
         .then((res) => {
-          setUser(res.data);
+          const data = res.data as AuthResponse;
+          setUser(data);
         })
         .catch(() => setUser(null));
     } catch (error) {

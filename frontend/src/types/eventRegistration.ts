@@ -1,22 +1,24 @@
 import { BaseEntity } from "./base";
+import { Event } from "./event";
 import { AttendanceStatus, PaymentStatus, TicketType } from "./enums";
 
 export interface EventRegistration extends BaseEntity {
   eventId: string;
   userId: string;
-  ticketType: TicketType;
-  paymentStatus: PaymentStatus;
-  qrCode: string | null;
-  attendanceStatus: AttendanceStatus;
-  certificateUrl: string | null;
+  ticketType: string;
+  paymentStatus: string;
+  qrCode: string;
+  attendanceStatus: string;
+  certificateUrl: string;
+  orderCode: string;
+  event: Event;
 }
 
 export interface CreateEventRegistrationRequest {
   eventId: string;
   userId: string;
-  ticketType: TicketType;
-  attendanceStatus?: AttendanceStatus;
-  certificateUrl?: string;
+  ticketType: TicketType | string;
+  attendanceStatus?: AttendanceStatus | string;
 }
 
 export interface VerifyEventRegistrationRequest {

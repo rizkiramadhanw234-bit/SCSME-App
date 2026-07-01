@@ -4,55 +4,54 @@ import {
   updatePaidUpload,
   deletePaidUpload,
   getPaidUploadById,
+  getPaidUploadByUserId,
 } from "@/services/paidUpload.service";
-import {
-  CreatePaidUploadFormData,
-  UpdatePaidUploadFormData,
-  PaidUpload,
-} from "@/types";
+import { CreatePaidUploadFormData, UpdatePaidUploadFormData } from "@/types";
 
 const paidUploadKeys = {
   data: ["paidUpload"] as const,
   detail: (id: string) => [...paidUploadKeys.data, "detail", id] as const,
   lists: () => [...paidUploadKeys.data, "lists"] as const,
+  userId: (userId: string) =>
+    [...paidUploadKeys.data, "userId", userId] as const,
 };
 
 export const useCreatePaidUpload = () => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: CreatePaidUploadFormData) =>
-      await createPaidUpload(data),
-    onSuccess: (newData) => {
-      queryClient.setQueryData(
-        paidUploadKeys.lists(),
-        (old: PaidUpload[] | null) => {
-          if (!old) return [newData];
-          return [...old, newData];
-        },
-      );
-      queryClient.invalidateQueries({ queryKey: paidUploadKeys.lists() });
+    mutationFn: async (data: CreatePaidUploadFormData) => {
+      const res = await createPaidUpload(data);
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: paidUploadKeys.data });
     },
     onError: (error) => console.error(error),
   });
 };
 
-export const useUpdatePainUpload = () => {
+export const useUpdatePaidUpload = (id: string) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: UpdatePaidUploadFormData) =>
-      await updatePaidUpload(data.id, data),
-
-    onSuccess: (newData) => {
-      queryClient.setQueryData(
-        paidUploadKeys.lists(),
-        (old: PaidUpload[] | null) => {
-          if (!old) return [newData];
-          return [...old, newData];
-        },
-      );
-      queryClient.invalidateQueries({ queryKey: paidUploadKeys.lists() });
+    mutationFn: async (data: UpdatePaidUploadFormData) => {
+      const res = await updatePaidUpload(id, data);
+      return res;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: paidUploadKeys.data });
     },
     onError: (error) => console.error(error),
+  });
+};
+
+export const useGetPaidUploadByUserId = (userId: string) => {
+  return useQuery({
+    queryKey: paidUploadKeys.userId(userId),
+    queryFn: async () => {
+      const res = await getPaidUploadByUserId(userId);
+      return res;
+    },
+    enabled: !!userId,
   });
 };
 
@@ -72,7 +71,7 @@ export const useDeletePaidUploads = (id: string) => {
   return useMutation({
     mutationFn: async () => await deletePaidUpload(id),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: paidUploadKeys.lists() });
+      queryClient.invalidateQueries({ queryKey: paidUploadKeys.data });
     },
     onError: (error) => console.error(error),
   });

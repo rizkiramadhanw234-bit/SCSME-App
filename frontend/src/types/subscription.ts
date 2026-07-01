@@ -1,5 +1,6 @@
 import { BaseEntity } from "./base";
 import { PaymentStatus, RenewalStatus } from "./enums";
+import { MembershipPlan } from "./membershipPlan";
 
 export interface Subscription extends BaseEntity {
   userId: string;
@@ -8,6 +9,7 @@ export interface Subscription extends BaseEntity {
   endDate: string;
   paymentStatus: PaymentStatus;
   renewalStatus: RenewalStatus;
+  plan: MembershipPlan;
 }
 
 export interface CreateSubscriptionRequest {
@@ -22,6 +24,7 @@ export interface UpgradeSubscriptionRequest {
   startDate: string;
   endDate: string;
   renewalStatus: RenewalStatus;
+  paymentStatus: PaymentStatus;
 }
 
 export interface VerifySubscriptionRequest {

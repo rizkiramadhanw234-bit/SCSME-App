@@ -15,23 +15,33 @@ export const createCompany = async (data: CreateCompanyRequest) => {
   const res = await axiosApi.post<{ data: Company }>(
     "/company/create",
     formData,
-    {
-      headers: { "Content-Type": "multipart/form-data" },
-    },
+    { headers: { "Content-Type": "multipart/form-data" } },
   );
   return res.data.data;
 };
 
 export const updateCompany = async (id: string, data: UpdateCompanyRequest) => {
+  const formData = new FormData();
+  Object.entries(data).forEach(([key, value]) => {
+    if (value !== undefined && value !== null) {
+      formData.append(key, value as string | Blob);
+    }
+  });
   const res = await axiosApi.put<{ data: Company }>(
     `/company/update/${id}`,
-    data,
+    formData,
+    { headers: { "Content-Type": "multipart/form-data" } },
   );
   return res.data.data;
 };
 
 export const getCompanies = async () => {
   const res = await axiosApi.get<{ data: Company[] }>("/company");
+  return res.data.data;
+};
+
+export const getCompaniesByUserId = async (userId: string) => {
+  const res = await axiosApi.get<{ data: Company[] }>(`/company/${userId}`);
   return res.data.data;
 };
 

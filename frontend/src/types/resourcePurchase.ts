@@ -5,6 +5,7 @@ export interface ResourcePurchase extends BaseEntity {
   resourceId: string;
   userId: string;
   paymentStatus: PaymentStatus;
+  orderCode: string;
 }
 
 export interface CreateResourcePurchaseRequest {

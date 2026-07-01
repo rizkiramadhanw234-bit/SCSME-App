@@ -14,8 +14,10 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { LoginRequest } from "@/types";
+import { AuthResponse, LoginRequest } from "@/types";
 import Link from "next/link";
+import { axiosApi } from "@/services/axios";
+import { SpinnerCustom } from "@/components/ui/spinner";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -26,13 +28,32 @@ export default function LoginPage() {
   });
   const [showPassword, setShowPassword] = useState(false);
   const { mutateAsync: login, isPending, isError } = useLogin();
-  const { accessToken } = useAuthStore();
+  const { setUser, accessToken, isHydrated } = useAuthStore();
 
   useEffect(() => {
-    if (accessToken) {
-      router.push("/");
-    }
-  }, [accessToken, router]);
+    axiosApi
+      .post("/user/refresh-token")
+      .then((res) => {
+        const data = res.data as AuthResponse;
+        if (accessToken) {
+          router.push("/home");
+          return;
+        }
+        setUser(data);
+      })
+      .catch(() => {
+        setUser(null);
+        router.replace("/auth/login");
+      });
+  }, [setUser, router, accessToken]);
+
+  if (!isHydrated)
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <SpinnerCustom />
+      </div>
+    );
+  if (accessToken) return null;
 
   const handleLogin = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();

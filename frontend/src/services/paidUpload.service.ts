@@ -31,6 +31,13 @@ export const updatePaidUpload = async (
   return res.data.data;
 };
 
+export const getPaidUploadByUserId = async (userId: string) => {
+  const res = await axiosApi.get<{ data: PaidUpload[] }>(
+    `/paid-uploads/user/${userId}`,
+  );
+  return res.data.data;
+};
+
 export const getPaidUploadById = async (id: string) => {
   const res = await axiosApi.get<{ data: PaidUpload }>(`/paid-uploads/${id}`);
   return res.data.data;

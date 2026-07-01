@@ -1,9 +1,5 @@
 import { useQuery, useQueryClient, useMutation } from "@tanstack/react-query";
-import type {
-  Company,
-  CreateCompanyRequest,
-  UpdateCompanyRequest,
-} from "@/types";
+import type { CreateCompanyRequest, UpdateCompanyRequest } from "@/types";
 import {
   createCompany,
   updateCompany,
@@ -11,6 +7,7 @@ import {
   getCompanies,
   getCompanyById,
 } from "@/services/company.service";
+import { getCompaniesByUserId } from "@/services/company.service";
 
 const companyKeys = {
   companies: ["companies"] as const,
@@ -35,6 +32,18 @@ export const useGetCompanyById = (id: string) => {
       const res = await getCompanyById(id);
       return res;
     },
+    enabled: !!id,
+  });
+};
+
+export const useGetCompaniesByUserId = (userId: string) => {
+  return useQuery({
+    queryKey: companyKeys.lists(),
+    queryFn: async () => {
+      const res = await getCompaniesByUserId(userId);
+      return res;
+    },
+    enabled: !!userId,
   });
 };
 
@@ -45,11 +54,7 @@ export const useCreateCompany = () => {
       const res = await createCompany(data);
       return res;
     },
-    onSuccess: (newData) => {
-      queryClient.setQueryData(companyKeys.lists(), (old: Company[] | null) => {
-        if (!old) return [newData];
-        return [...old, newData];
-      });
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: companyKeys.lists() });
     },
     onError: (error) => console.error(error),
@@ -63,11 +68,7 @@ export const useUpdateCompany = (id: string) => {
       const res = await updateCompany(id, data);
       return res;
     },
-    onSuccess: (newData) => {
-      queryClient.setQueryData(companyKeys.lists(), (old: Company[] | null) => {
-        if (!old) return [newData];
-        return [...old, newData];
-      });
+    onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: companyKeys.lists() });
     },
     onError: (error) => console.error(error),

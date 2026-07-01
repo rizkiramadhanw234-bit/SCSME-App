@@ -8,6 +8,7 @@ const membershipPlansKey = {
   membershipPlans: ["membershipPlans"] as const,
   detail: (id: string) =>
     [...membershipPlansKey.membershipPlans, "detail", id] as const,
+  lists: () => [...membershipPlansKey.membershipPlans, "lists"] as const,
 };
 
 export const useGetMembershipPlans = () => {
@@ -20,12 +21,13 @@ export const useGetMembershipPlans = () => {
   });
 };
 
-export const useGetMembershipPlantById = (id: string) => {
+export const useGetMembershipPlanById = (id: string) => {
   return useQuery({
     queryKey: membershipPlansKey.detail(id),
     queryFn: async () => {
       const res = await getMembershipPlanById(id);
       return res;
     },
+    enabled: !!id,
   });
 };

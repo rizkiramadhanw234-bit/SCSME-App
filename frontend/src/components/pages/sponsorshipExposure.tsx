@@ -11,18 +11,21 @@ import UploadType from "../uploadType";
 import { useState, useEffect } from "react";
 import type { CreatePaidUploadFormData, PaidUploadType } from "@/types";
 import { useAuthStore } from "@/stores/auth.store";
-import { useGetCompanies } from "@/hooks/useCompany";
+import { useGetCompaniesByUserId } from "@/hooks/useCompany";
 import { useCreatePaidUpload } from "@/hooks/usePaidUpload";
 
 export default function SponsorshipExposure() {
   const router = useRouter();
   const { user } = useAuthStore();
-  const { data: companies } = useGetCompanies();
-  const { mutateAsync: createPaidUpload, isPending } = useCreatePaidUpload();
+  const companies = useGetCompaniesByUserId(user?.id ?? "");
+  const dataCompany = companies.data ?? [];
+  const {
+    mutateAsync: createPaidUpload,
+    isPending,
+    isSuccess,
+  } = useCreatePaidUpload();
 
-  const [formData, setFormData] = useState<
-    Omit<CreatePaidUploadFormData, "id" | "createdAt" | "updatedAt">
-  >({
+  const [formData, setFormData] = useState<CreatePaidUploadFormData>({
     userId: "",
     companyId: "",
     uploadType: "",
@@ -70,6 +73,7 @@ export default function SponsorshipExposure() {
       alert("Please select an image file.");
       return;
     }
+
     try {
       createPaidUpload(formData);
     } catch (error) {
@@ -175,9 +179,9 @@ export default function SponsorshipExposure() {
                     className="border border-gray-300 rounded-md px-3 h-9 text-sm w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Select Company</option>
-                    {companies?.map((c) => (
-                      <option key={c.id} value={c.id}>
-                        {c.companyName}
+                    {dataCompany.map((data) => (
+                      <option key={data.id} value={data.id}>
+                        {data.companyName}
                       </option>
                     ))}
                   </select>
@@ -303,6 +307,16 @@ export default function SponsorshipExposure() {
               </Button>
             </div>
           </form>
+
+          {/* success message */}
+          {isSuccess && (
+            <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mt-4">
+              <strong className="font-bold">Success!</strong>
+              <span className="block sm:inline">
+                Your sponsorship exposure has been successfully submitted.
+              </span>
+            </div>
+          )}
         </div>
       </div>
     </div>

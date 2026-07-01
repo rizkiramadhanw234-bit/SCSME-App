@@ -26,7 +26,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const { user, loading } = useAuthStore();
-  const { mutate: logout } = useLogout();
+  const { mutate: logout, isPending } = useLogout();
 
   const handleLogout = () => {
     logout();
@@ -93,9 +93,9 @@ export default function Navbar() {
                       <CreditCardIcon />
                       Company
                     </DropdownMenuItem>
-                    <DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push("/dashboard")}>
                       <SettingsIcon />
-                      Settings
+                      Dashboard
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
@@ -103,7 +103,7 @@ export default function Navbar() {
                       onClick={handleLogout}
                     >
                       <LogOutIcon />
-                      Log out
+                      {isPending ? "Logging out..." : "Logout"}
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
